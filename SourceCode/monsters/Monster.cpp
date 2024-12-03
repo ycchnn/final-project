@@ -115,6 +115,14 @@ Monster::update() {
 	//revise
 	//ImageCenter *IC = ImageCenter::get_instance();
 
+	if (is_hit) {
+        hit_timer -= 1.0 / DC->FPS; // 減少受擊效果時間
+        if (hit_timer <= 0) {
+            is_hit = false;        // 結束受擊狀態
+            brightness = 1.0;      // 恢復正常亮度
+        }
+    }
+
 	// After a period, the bitmap for this monster should switch from (i)-th image to (i+1)-th image to represent animation.
 	if(bitmap_switch_counter) --bitmap_switch_counter;
 	else {
@@ -207,10 +215,30 @@ Monster::draw() {
         debug_log("GIF not found: %s\n", gifPath[static_cast<int>(type)].c_str());
         return;
     }
+	if (is_hit) {
+        // 設置高亮混合模式
+        al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
+        al_draw_tinted_bitmap(
+            algif_get_frame_bitmap(gif),  // 獲取當前幀的位圖
+            al_map_rgba_f(1.5f, 1.5f, 1.5f, 1.0f),
+            shape->center_x() - gif->width / 2,
+            shape->center_y() - gif->height / 2, 0);
+    } else {
+        // 使用正常亮度或根據 brightness 調整
+        al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
+        al_draw_tinted_bitmap(
+            algif_get_frame_bitmap(gif),  // 獲取當前幀的位圖
+            al_map_rgba_f(brightness, brightness, brightness, 1.0f),
+            shape->center_x() - gif->width / 2,
+            shape->center_y() - gif->height / 2, 0);
+    }
+
+    // 恢復混合模式，防止影響其他物件
+    al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
     //draw gif
-    algif_draw_gif(gif,
+    /*algif_draw_gif(gif,
                     shape->center_x() - gif->width/2,
                     shape->center_y() - gif->height/2,
-                    0);       
+                    0);*/       
 	//revise end
 }
