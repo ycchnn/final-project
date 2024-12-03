@@ -57,6 +57,11 @@ void OperationCenter::_update_monster_towerBullet() {
 		for(size_t j = 0; j < towerBullets.size(); ++j) {
 			// Check if the bullet overlaps with the monster.
 			if(monsters[i]->shape->overlap(*(towerBullets[j]->shape))) {
+				
+				monsters[i]->is_hit = true;
+				monsters[i]->hit_timer = 0.3;
+				monsters[i]->brightness = 1.5;
+
 				// Reduce the HP of the monster. Delete the bullet.
 				monsters[i]->HP -= towerBullets[j]->get_dmg();
 				towerBullets.erase(towerBullets.begin()+j);
