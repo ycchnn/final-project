@@ -10,8 +10,6 @@
 #include "../shapes/Rectangle.h"
 #include "../Utils.h"
 #include <allegro5/allegro_primitives.h>
-#include "../data/GIFCenter.h"
- #include "../algif5/algif.h"
 
 using namespace std;
 
@@ -20,7 +18,6 @@ enum class Dir {
 	UP, DOWN, LEFT, RIGHT
 };
 namespace MonsterSetting {
-	/*revise
 	static constexpr char monster_imgs_root_path[static_cast<int>(MonsterType::MONSTERTYPE_MAX)][40] = {
 		"./assets/image/monster/Wolf",
 		"./assets/image/monster/CaveMan",
@@ -30,17 +27,6 @@ namespace MonsterSetting {
 	static constexpr char dir_path_prefix[][10] = {
 		"UP", "DOWN", "LEFT", "RIGHT"
 	};
-	*/
-	static constexpr char gif_root_path[static_cast<int>(MonsterType::MONSTERTYPE_MAX)][40] = {
-		"./assets/gif/zombie/normal",
-		"./assets/gif/zombie/normal",
-		"./assets/gif/zombie/normal",
-		"./assets/gif/zombie/normal"
-	};
-	static constexpr char gif_postfix[][10] = {
-		"original", "eat", "fall", "nohead"
-	};
-	//revise end
 }
 
 /**
@@ -112,8 +98,15 @@ Monster::Monster(const vector<Point> &path, MonsterType type) {
 void
 Monster::update() {
 	DataCenter *DC = DataCenter::get_instance();
-	//revise
-	//ImageCenter *IC = ImageCenter::get_instance();
+	ImageCenter *IC = ImageCenter::get_instance();
+
+	if (is_hit) {
+        hit_timer -= 1.0 / DC->FPS; // 減少受擊效果時間
+        if (hit_timer <= 0) {
+            is_hit = false;        // 結束受擊狀態
+            brightness = 1.0;      // 恢復正常亮度
+        }
+    }
 
 	// After a period, the bitmap for this monster should switch from (i)-th image to (i+1)-th image to represent animation.
 	if(bitmap_switch_counter) --bitmap_switch_counter;
@@ -153,41 +146,26 @@ Monster::update() {
 		// Update facing direction.
 		dir = tmpdir;
 	}
-
 	// Update real hit box for monster.
-	/*revise
 	char buffer[50];
 	sprintf(
 		buffer, "%s/%s_%d.png",
 		MonsterSetting::monster_imgs_root_path[static_cast<int>(type)],
 		MonsterSetting::dir_path_prefix[static_cast<int>(dir)],
 		bitmap_img_ids[static_cast<int>(dir)][bitmap_img_id]);
-	
-	*/
-	char buffer[50];
-    sprintf(buffer, "%s/normal_%s.gif",
-            MonsterSetting::gif_root_path,
-            MonsterSetting::gif_postfix[static_cast<int>(type)]); //print to buffer array
-    gifPath[static_cast<int>(type)] = std::string(buffer);
-	/*revise
 	ALLEGRO_BITMAP *bitmap = IC->get(buffer);
 	const double &cx = shape->center_x();
 	const double &cy = shape->center_y();
 	// We set the hit box slightly smaller than the actual bounding box of the image because there are mostly empty spaces near the edge of a image.
 	const int &h = al_get_bitmap_width(bitmap) * 0.8;
 	const int &w = al_get_bitmap_height(bitmap) * 0.8;
-
 	shape.reset(new Rectangle{
 		(cx - w / 2.), (cy - h / 2.),
 		(cx - w / 2. + w), (cy - h / 2. + h)
 	});
-	*/
 }
 
-
-void
-Monster::draw() {
-	/*
+void Monster::draw() {
 	ImageCenter *IC = ImageCenter::get_instance();
 	char buffer[50];
 	sprintf(
@@ -196,21 +174,19 @@ Monster::draw() {
 		MonsterSetting::dir_path_prefix[static_cast<int>(dir)],
 		bitmap_img_ids[static_cast<int>(dir)][bitmap_img_id]);
 	ALLEGRO_BITMAP *bitmap = IC->get(buffer);
+
+	if(is_hit){
+		al_set_blender(ALLEGRO_ADD,ALLEGRO_ONE,ALLEGRO_ONE);
+		al_draw_tinted_bitmap(bitmap, al_map_rgba_f(1.5f,1.5f,1.5f,1.0f),
+		shape->center_x() - al_get_bitmap_width(bitmap)/2 ,
+		shape->center_y() - al_get_bitmap_height(bitmap)/2, 0);
+	}
+	else {
+	al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
 	al_draw_bitmap(
 		bitmap,
 		shape->center_x() - al_get_bitmap_width(bitmap) / 2,
 		shape->center_y() - al_get_bitmap_height(bitmap) / 2, 0);
-	*/
-	GIFCenter *GIFC = GIFCenter::get_instance();
-    ALGIF_ANIMATION *gif = GIFC->get(gifPath[static_cast<int>(type)]);
-	if (!gif) {
-        debug_log("GIF not found: %s\n", gifPath[static_cast<int>(type)].c_str());
-        return;
-    }
-    //draw gif
-    algif_draw_gif(gif,
-                    shape->center_x() - gif->width/2,
-                    shape->center_y() - gif->height/2,
-                    0);       
-	//revise end
+	}
+	al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
 }

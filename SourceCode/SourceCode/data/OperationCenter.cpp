@@ -4,9 +4,8 @@
 #include "../towers/Tower.h"
 #include "../towers/Bullet.h"
 #include "../Player.h"
-//revise start
+
 #include "../Hero.h"
-//revise end
 
 void OperationCenter::update() {
 	// Update monsters.
@@ -19,9 +18,23 @@ void OperationCenter::update() {
 	_update_monster_towerBullet();
 	// If any monster reaches the end, hurt the player and delete the monster.
 	_update_monster_player();
-	//i2p revise start
+
 	_update_monster_hero();
-	//revise end
+
+}
+
+void OperationCenter::_update_monster_hero()
+{
+	DataCenter *DC = DataCenter::get_instance();
+	std::vector<Monster *> &monsters = DC->monsters;
+	for (size_t i = 0; i < monsters.size(); i++)
+	{
+		if(monsters[i]->shape->overlap(*(DC->hero->shape)))
+		{
+			monsters[i]->HP = 0;
+		}
+	}
+	
 }
 
 void OperationCenter::_update_monster() {
@@ -58,6 +71,11 @@ void OperationCenter::_update_monster_towerBullet() {
 			// Check if the bullet overlaps with the monster.
 			if(monsters[i]->shape->overlap(*(towerBullets[j]->shape))) {
 				// Reduce the HP of the monster. Delete the bullet.
+
+				monsters[i]->is_hit = true;
+				monsters[i]->hit_timer = 0.3;
+				monsters[i]->brightness = 1.5;
+
 				monsters[i]->HP -= towerBullets[j]->get_dmg();
 				towerBullets.erase(towerBullets.begin()+j);
 				--j;
@@ -88,21 +106,6 @@ void OperationCenter::_update_monster_player() {
 		}
 	}
 }
-
-//i2p revise s
-void OperationCenter::_update_monster_hero()
-{
-	DataCenter *DC = DataCenter::get_instance();
-	std::vector<Monster *> &monsters = DC->monsters;
-	for (size_t i = 0; i < monsters.size(); ++i)
-	{
-		if (monsters[i]->shape->overlap(*(DC->hero->shape)))
-		{
-			monsters[i]->HP = 0;
-		}
-	}
-}
-//i2p revise e
 
 void OperationCenter::draw() {
 	_draw_monster();
