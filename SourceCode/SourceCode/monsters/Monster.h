@@ -5,7 +5,6 @@
 #include "../shapes/Rectangle.h"
 #include <vector>
 #include <queue>
-#include <map>
 
 enum class Dir;
 
@@ -29,6 +28,9 @@ public:
 	const int &get_money() const { return money; }
 	int HP;
 	const std::queue<Point> &get_path() const { return path; }
+	bool is_hit = false;
+	float hit_timer = 0;
+	float brightness = 1;
 protected:
 	/**
 	 * @var HP
@@ -68,9 +70,6 @@ protected:
 	int bitmap_switch_counter;
 	int bitmap_switch_freq;
 	int bitmap_img_id;
-	//revise start
-	std::map<int, std::string> gifPath; // 每種怪物類型對應的 GIF 路徑
-	//revise end
 private:
 	MonsterType type;
 	Dir dir;
