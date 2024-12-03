@@ -29,6 +29,9 @@ public:
 	const int &get_money() const { return money; }
 	int HP;
 	const std::queue<Point> &get_path() const { return path; }
+	bool is_hit = false;
+	float hit_timer = 0;
+	float brightness = 1;
 protected:
 	/**
 	 * @var HP
