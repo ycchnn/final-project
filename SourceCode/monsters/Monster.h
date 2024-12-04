@@ -32,6 +32,10 @@ public:
 	bool is_hit = false;
 	float hit_timer = 0;
 	float brightness = 1;
+
+	int current_frame = 0;     // 當前幀索引
+    int frame_timer = 0;       // 計算幀時間
+
 protected:
 	/**
 	 * @var HP
