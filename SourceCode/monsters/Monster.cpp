@@ -190,6 +190,23 @@ Monster::update() {
 		(cx - w / 2. + w), (cy - h / 2. + h)
 	});
 	*/
+
+	GIFCenter *GIFC = GIFCenter::get_instance();
+    ALGIF_ANIMATION *gif = GIFC->get(gifPath[static_cast<int>(type)]);
+    if (gif) {
+        // 獲取當前幀的持續時間（以毫秒為單位）
+        int frame_duration = gif->frames[current_frame].duration;
+
+        // 遞增幀計時器
+        frame_timer += 100 / DataCenter::get_instance()->FPS; // 每幀時間（毫秒）
+
+        // 如果超過幀持續時間，切換到下一幀
+        if (frame_timer >= frame_duration) {
+            frame_timer = 0;
+            current_frame = (current_frame + 1) % gif->frames_count;
+        }
+    }
+
 }
 
 
@@ -215,25 +232,25 @@ Monster::draw() {
         debug_log("GIF not found: %s\n", gifPath[static_cast<int>(type)].c_str());
         return;
     }
-	if (is_hit) {
-        // 設置高亮混合模式
-        al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
-        al_draw_tinted_bitmap(
-            algif_get_frame_bitmap(gif),  // 獲取當前幀的位圖
-            al_map_rgba_f(1.5f, 1.5f, 1.5f, 1.0f),
-            shape->center_x() - gif->width / 2,
-            shape->center_y() - gif->height / 2, 0);
-    } else {
-        // 使用正常亮度或根據 brightness 調整
-        al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
-        al_draw_tinted_bitmap(
-            algif_get_frame_bitmap(gif),  // 獲取當前幀的位圖
-            al_map_rgba_f(brightness, brightness, brightness, 1.0f),
-            shape->center_x() - gif->width / 2,
-            shape->center_y() - gif->height / 2, 0);
+	// 獲取當前幀位圖
+    ALLEGRO_BITMAP *frame_bitmap = algif_get_frame_bitmap(gif, current_frame);
+    if (!frame_bitmap) {
+        debug_log("Frame not found for GIF: %s\n", gifPath[static_cast<int>(type)].c_str());
+        return;
     }
 
-    // 恢復混合模式，防止影響其他物件
+    if (is_hit) {
+        al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE); // 增加亮度
+    }
+
+    // 繪製當前幀
+    al_draw_bitmap(
+        frame_bitmap,
+        shape->center_x() - gif->width / 2,
+        shape->center_y() - gif->height / 2,
+        0);
+
+    // 恢復默認混合模式
     al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
     //draw gif
     /*algif_draw_gif(gif,
