@@ -9,7 +9,7 @@
 class TowerStorm : public Tower
 {
 public:
-	TowerStorm(const Point &p) : Tower(p, attack_range(), 4, TowerType::STORM) {}
+	TowerStorm(const Point &p) : Tower(p, attack_range(), 4, TowerType::STORM, 140) {}
 	Bullet *create_bullet(/*Object *target*/) {
 		const Point &p = Point(shape->center_x(), shape->center_y());
 		//const Point &t = Point(target->shape->center_x(), target->shape->center_y());

@@ -60,7 +60,7 @@ public:
 	 */
 	static Tower *create_tower(TowerType type, const Point &p);
 public:
-	Tower(const Point &p, double attack_range, int attack_freq, TowerType type);
+	Tower(const Point &p, double attack_range, int attack_freq, TowerType type, int h);
 	virtual ~Tower() {}
 	void update();
 	virtual bool attack(/*Object *target*/);
@@ -69,6 +69,7 @@ public:
 	virtual Bullet *create_bullet(/*Object *target*/) = 0;
 	virtual const double attack_range() const = 0;
 	TowerType type;
+	int hp;
 private:
 	/**
 	 * @var attack_freq

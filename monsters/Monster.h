@@ -30,6 +30,7 @@ public:
 	void resume();
 	int current_frame = 0;     // 當前幀索引
     int frame_timer = 0;       // 計算幀時間
+	void die();
 	const int &get_money() const { return money; }
 	int HP;
 	const std::queue<Point> &get_path() const { return path; }

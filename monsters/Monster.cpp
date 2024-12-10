@@ -118,10 +118,6 @@ Monster::update() {
             MonsterSetting::gif_postfix[static_cast<int>(dir)]); //print to buffer array
     gifPath[static_cast<int>(type)] = std::string(buffer);
 
-	if (is_eating) {
-        return; // 怪物暫停，不進行更新
-	}
-
 	DataCenter *DC = DataCenter::get_instance();
 	//revise
 	//ImageCenter *IC = ImageCenter::get_instance();
@@ -132,6 +128,7 @@ Monster::update() {
             brightness = 1.0;      // 恢復正常亮度
         }
     }
+
 	// After a period, the bitmap for this monster should switch from (i)-th image to (i+1)-th image to represent animation.
 	if(bitmap_switch_counter) --bitmap_switch_counter;
 	else {
@@ -139,6 +136,28 @@ Monster::update() {
 		bitmap_switch_counter = bitmap_switch_freq;
 	}
 
+	
+	
+	GIFCenter *GIFC = GIFCenter::get_instance();
+    ALGIF_ANIMATION *gif = GIFC->get(gifPath[static_cast<int>(type)]);
+    if (gif) {
+        // 獲取當前幀的持續時間（以毫秒為單位）
+        int frame_duration = gif->frames[current_frame].duration;
+
+        // 遞增幀計時器
+        frame_timer += 100 / DataCenter::get_instance()->FPS; // 每幀時間（毫秒）
+
+        // 如果超過幀持續時間，切換到下一幀
+        if (frame_timer >= frame_duration) {
+            frame_timer = 0;
+            current_frame = (current_frame + 1) % gif->frames_count;
+        }
+    }
+		
+	if (is_eating) {
+        return; // 怪物暫停，不進行更新
+	}
+	
 	// v (velocity) divided by FPS is the actual moving pixels per frame.
 	double movement = v / (DC->FPS);
 	// Keep trying to move to next destination in "path" while "path" is not empty and we can still move.
@@ -172,22 +191,6 @@ Monster::update() {
 		// Update facing direction.
 		//dir = tmpdir;
 	}
-	
-	GIFCenter *GIFC = GIFCenter::get_instance();
-    ALGIF_ANIMATION *gif = GIFC->get(gifPath[static_cast<int>(type)]);
-    if (gif) {
-        // 獲取當前幀的持續時間（以毫秒為單位）
-        int frame_duration = gif->frames[current_frame].duration;
-
-        // 遞增幀計時器
-        frame_timer += 100 / DataCenter::get_instance()->FPS; // 每幀時間（毫秒）
-
-        // 如果超過幀持續時間，切換到下一幀
-        if (frame_timer >= frame_duration) {
-            frame_timer = 0;
-            current_frame = (current_frame + 1) % gif->frames_count;
-        }
-    }
 	// Update real hit box for monster.
 	/*revise
 	char buffer[50];
@@ -274,7 +277,6 @@ void Monster::resume() {
 	dir = Dir::LEFT;
 }
 
-/*void Monster::eating() {
-    is_eating = true;
-	dir = Dir::DOWN;
-}*/
+void Monster::die() {
+	dir = Dir::UP;
+}
