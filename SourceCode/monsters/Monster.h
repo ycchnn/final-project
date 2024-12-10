@@ -28,6 +28,7 @@ public:
 	void draw();
 	void eating();
 	void resume();
+	void die();
 	const int &get_money() const { return money; }
 	int HP;
 	const std::queue<Point> &get_path() const { return path; }
