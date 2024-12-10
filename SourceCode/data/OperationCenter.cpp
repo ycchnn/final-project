@@ -73,11 +73,19 @@ void OperationCenter::_update_monster_tower() {
 	DataCenter *DC = DataCenter::get_instance();
 	std::vector<Monster*> &monsters = DC->monsters;
 	std::vector<Tower*> &towers = DC->towers;
+	Player *&player = DC->player;
 	for(size_t i = 0; i < monsters.size(); ++i) {
 		for(size_t j = 0; j < towers.size(); ++j) {
 			// Check if the plant overlaps with the monster.
 			if(monsters[i]->shape->overlap(towers[j]->get_region())) {
 				monsters[i]->eating();
+				towers[j]->hp -= 1;
+				if(towers[j]->hp <= 0) {
+					towers.erase(towers.begin()+j);
+					--j;
+					monsters[i]->resume();
+					// Since the current plant is killed, we can directly proceed to next monster.
+				}
 			}
 		}
 	}
@@ -93,14 +101,13 @@ void OperationCenter::_update_monster_player() {
 		if(monsters[i]->HP <= 0) {
 			// Monster gets killed. Player receives money.
 			player->coin += monsters[i]->get_money();
-
 			monsters.erase(monsters.begin()+i);
 			--i;
 			// Since the current monsster is killed, we can directly proceed to next monster.
 			break;
 		}
-		else if(monsters[i]->HP <= 10){
-			monsters[i]->dir = Dir:: UP;
+		else if(monsters[i]->HP <= 12){
+			//monsters[i]->die();
 		}
 		// Check if the monster reaches the end.
 		if(monsters[i]->get_path().empty()) {
@@ -110,6 +117,7 @@ void OperationCenter::_update_monster_player() {
 		}
 	}
 }
+
 
 //i2p revise s
 /*
