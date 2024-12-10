@@ -9,7 +9,7 @@
 class TowerArcher : public Tower
 {
 public:
-	TowerArcher(const Point &p) : Tower(p, attack_range(), 36, TowerType::ARCHER) {}
+	TowerArcher(const Point &p) : Tower(p, attack_range(), 36, TowerType::ARCHER， 140) {}
 	Bullet *create_bullet(Object *target) {
 		const Point &p = Point(shape->center_x(), shape->center_y());
 		const Point &t = Point(target->shape->center_x(), target->shape->center_y());
