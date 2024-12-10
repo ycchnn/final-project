@@ -9,7 +9,7 @@
 class TowerArcane : public Tower
 {
 public:
-	TowerArcane(const Point &p) : Tower(p, attack_range(), 60, TowerType::ARCANE) {}
+	TowerArcane(const Point &p) : Tower(p, attack_range(), 60, TowerType::ARCANE， 140) {}
 	Bullet *create_bullet(Object *target) {
 		const Point &p = Point(shape->center_x(), shape->center_y());
 		const Point &t = Point(target->shape->center_x(), target->shape->center_y());
