@@ -234,7 +234,6 @@ void Monster::resume() {
 	dir = Dir::LEFT;
 }
 
-void Monster::eating() {
-    is_eating = true;
-	dir = Dir::DOWN;
+void Monster::die() {
+	dir = Dir::UP;
 }
