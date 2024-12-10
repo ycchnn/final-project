@@ -58,7 +58,7 @@ Tower::create_tower(TowerType type, const Point &p) {
  * @param attack_freq period for tower to attack.
  * @param type tower type.
 */
-Tower::Tower(const Point &p, double attack_range, int attack_freq, TowerType type) {
+Tower::Tower(const Point &p, double attack_range, int attack_freq, TowerType type, int h) {
 	//revise start
 	//ImageCenter *IC = ImageCenter::get_instance();
 	GIFCenter *GIFC = GIFCenter::get_instance();
@@ -70,6 +70,7 @@ Tower::Tower(const Point &p, double attack_range, int attack_freq, TowerType typ
 	this->type = type;
 	//revise
 	animation = GIFC->get(TowerSetting::tower_gif_path[static_cast<int>(type)]);
+	hp = h;
 }
 
 /**
