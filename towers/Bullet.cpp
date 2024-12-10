@@ -5,6 +5,8 @@
 #include "../shapes/Point.h"
 #include <algorithm>
 #include <allegro5/bitmap_draw.h>
+#include "../data/GIFCenter.h"
+#include "../algif5/algif.h"
 
 /*Bullet::Bullet(const Point &p, const Point &target, const std::string &path, double v, int dmg, double fly_dist) {
 	ImageCenter *IC = ImageCenter::get_instance();
@@ -18,13 +20,16 @@
 	vy = (target.y - p.y) * v / d;
 }*/
 Bullet::Bullet(const Point &p, const std::string &path, double v, int dmg, double fly_dist) {
-    ImageCenter *IC = ImageCenter::get_instance();
+    GIFCenter *GIFC = GIFCenter::get_instance();
+	gif = GIFC->get(path);  // 從 GIFCenter 獲取 GIF 動畫
+    gif_time = 0;           // 初始化 GIF 動畫時間 
+    //ImageCenter *IC = ImageCenter::get_instance();
     this->fly_dist = /*fly_dist*/1500;
     this->dmg = dmg;
-    bitmap = IC->get(path);
+    //bitmap = IC->get(path);
 
     // 設定子彈的碰撞體形狀
-    double r = std::min(al_get_bitmap_width(bitmap), al_get_bitmap_height(bitmap)) * 0.8;
+    double r = std::min(gif->width,gif->height) * 0.8;
     shape.reset(new Circle{p.x, p.y, r});
 
     // 固定向右飛行的速度
@@ -70,8 +75,19 @@ void Bullet::update() {
 
 void
 Bullet::draw() {
-	al_draw_bitmap(
+	/*al_draw_bitmap(
 		bitmap,
 		shape->center_x() - al_get_bitmap_width(bitmap) / 2,
-		shape->center_y() - al_get_bitmap_height(bitmap) / 2, 0);
+		shape->center_y() - al_get_bitmap_height(bitmap) / 2, 0);*/
+	DataCenter *DC = DataCenter::get_instance();
+	ALLEGRO_BITMAP *current_frame = algif_get_bitmap(gif, gif_time);
+	if (current_frame) {
+		al_draw_bitmap(
+			current_frame,
+			shape->center_x() - al_get_bitmap_width(current_frame) / 2,
+			shape->center_y() - al_get_bitmap_height(current_frame) / 2,
+			0);
+	}
+	// 更新 GIF 動畫時間
+	gif_time += 1.0 / DC->FPS;
 }

@@ -4,6 +4,7 @@
 #include "../Object.h"
 #include <allegro5/bitmap.h>
 #include <string>
+#include "../algif5/algif.h"
 
 /**
  * @brief The bullet shot from Tower.
@@ -38,7 +39,9 @@ private:
 	/**
 	 * @brief ALLEGRO_BITMAP of the bullet.
 	 */
-	ALLEGRO_BITMAP *bitmap;
+	//ALLEGRO_BITMAP *bitmap;
+	ALGIF_ANIMATION *gif;  // 使用 ALGIF_ANIMATION 代替 ALLEGRO_BITMAP
+    double gif_time;       // 追踪 GIF 動畫播放的時間
 };
 
 #endif

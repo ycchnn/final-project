@@ -31,11 +31,16 @@ namespace TowerSetting {
 		"./assets/image/card/cherry_bomb_card.png"
 	};
 	const std::array<std::string, static_cast<int>(TowerType::TOWERTYPE_MAX)> tower_bullet_img_path = {
-		"./assets/image/tower/Arcane_Beam.png",
+		/*"./assets/image/tower/Arcane_Beam.png",
 		"./assets/image/tower/Archer_Beam.png",
 		"./assets/image/tower/Canon_Beam.png",
 		"./assets/image/tower/Poison_Beam.png",
-		"./assets/image/tower/Storm_Beam.png"
+		"./assets/image/tower/Storm_Beam.png"*/
+		"./assets/gif/sun.gif",
+		"./assets/gif/plants/bullet.gif",
+		"./assets/gif/plants/bullet.gif",
+		"./assets/gif/plants/bullet.gif",
+		"./assets/gif/plants/bullet.gif"
 	};
 	const std::array<int, static_cast<int>(TowerType::TOWERTYPE_MAX)> tower_price = {50, 100, 150, 200, 250};
 };

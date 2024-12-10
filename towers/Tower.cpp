@@ -13,7 +13,7 @@
 #include "../data/SoundCenter.h"
 #include <allegro5/bitmap_draw.h>
 #include "../data/GIFCenter.h"
- #include "../algif5/algif.h"
+#include "../algif5/algif.h"
 
 // fixed settings
 namespace TowerSetting {
