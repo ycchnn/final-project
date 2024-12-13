@@ -17,7 +17,7 @@ using namespace std;
 
 // fixed settings
 enum class Dir {
-	UP, DOWN, LEFT, RIGHT
+	ORI, EAT, FALL, NOHEAD, ANGRY, ANGRY_EAT, LOSEPAPER, 
 };
 namespace MonsterSetting {
 	/*revise
@@ -37,8 +37,8 @@ namespace MonsterSetting {
 		"./assets/gif/zombie/newspaper",
 		"./assets/gif/zombie/flag"
 	};
-	static constexpr char gif_postfix[][10] = {
-		"fall", "eat", "original", "nohead"
+	static constexpr char gif_postfix[][12] = {
+		"original", "eat", "fall", "nohead", "angry", "angry_eat", "losepaper", 
 	};
 	//revise end
 }
@@ -72,24 +72,13 @@ Monster *Monster::create_monster(MonsterType type, const vector<Point> &path) {
 /**
  * @brief Given velocity of x and y direction, determine which direction the monster should face.
  */
-Dir convert_dir(const Point &v) {
-	if(v.y < 0 && abs(v.y) >= abs(v.x))
-		return Dir::UP;
-	if(v.y > 0 && abs(v.y) >= abs(v.x))
-		return Dir::DOWN;
-	if(v.x < 0 && abs(v.x) >= abs(v.y))
-		return Dir::LEFT;
-	if(v.x > 0 && abs(v.x) >= abs(v.y))
-		return Dir::RIGHT;
-	return Dir::RIGHT;
-}
 
 Monster::Monster(const vector<Point> &path, MonsterType type) {
 	DataCenter *DC = DataCenter::get_instance();
 	is_eating = false;
 	shape.reset(new Rectangle{0, 0, 0, 0});
 	this->type = type;
-	dir = Dir::LEFT;
+	dir = Dir::ORI;
 	bitmap_img_id = 0;
 	bitmap_switch_counter = 0;
 	for(const Point &p : path)
@@ -135,8 +124,6 @@ Monster::update() {
 		bitmap_img_id = (bitmap_img_id + 1) % (bitmap_img_ids[static_cast<int>(dir)].size());
 		bitmap_switch_counter = bitmap_switch_freq;
 	}
-
-	
 	
 	GIFCenter *GIFC = GIFCenter::get_instance();
     ALGIF_ANIMATION *gif = GIFC->get(gifPath[static_cast<int>(type)]);
@@ -153,9 +140,42 @@ Monster::update() {
             current_frame = (current_frame + 1) % gif->frames_count;
         }
     }
+
+	if(type== MonsterType::CAVEMAN){
+		if(HP<90){
+			type = MonsterType::WOLF;
+			char buffer[50];
+			sprintf(buffer, "%s/%s.gif",
+					MonsterSetting::gif_root_path[static_cast<int>(type)],
+					MonsterSetting::gif_postfix[static_cast<int>(dir)]);
+			gifPath[static_cast<int>(type)] = std::string(buffer);
+		}
+	}
+	else if(type == MonsterType::WOLFKNIGHT){
+		if(HP<90){
+			v = 30;
+			if(dir == Dir::ORI){
+				char buffer[50];
+				dir = Dir:: ANGRY;
+				sprintf(buffer, "%s/%s.gif",
+						MonsterSetting::gif_root_path[static_cast<int>(type)],
+						MonsterSetting::gif_postfix[static_cast<int>(dir)]);
+				gifPath[static_cast<int>(type)] = std::string(buffer);
+			}
+			else if(dir == Dir::EAT){
+				char buffer[50];
+				dir = Dir:: ANGRY_EAT;
+				sprintf(buffer, "%s/%s.gif",
+						MonsterSetting::gif_root_path[static_cast<int>(type)],
+						MonsterSetting::gif_postfix[static_cast<int>(dir)]);
+				gifPath[static_cast<int>(type)] = std::string(buffer);
+			}
+		}
+	}
+
 		
 	if (is_eating) {
-        return; // 怪物暫停，不進行更新
+        return; // 怪物暫停，不前進
 	}
 	
 	// v (velocity) divided by FPS is the actual moving pixels per frame.
@@ -169,11 +189,10 @@ Monster::update() {
 
 		// Extract the next destination as "next_goal". If we want to reach next_goal, we need to move "d" pixels.
 		double d = Point::dist(Point{shape->center_x(), shape->center_y()}, next_goal);
-		Dir tmpdir;
+		
 		if(d < movement) {
 			// If we can move more than "d" pixels in this frame, we can directly move onto next_goal and reduce "movement" by "d".
 			movement -= d;
-			//tmpdir = convert_dir(Point{next_goal.x - shape->center_x(), next_goal.y - shape->center_y()});
 			shape.reset(new Rectangle{
 				next_goal.x, next_goal.y,
 				next_goal.x, next_goal.y
@@ -183,57 +202,16 @@ Monster::update() {
 			// Otherwise, we move exactly "movement" pixels.
 			double dx = (next_goal.x - shape->center_x()) / d * movement;
 			double dy = (next_goal.y - shape->center_y()) / d * movement;
-			//tmpdir = convert_dir(Point{dx, dy});
 			shape->update_center_x(shape->center_x() + dx);
 			shape->update_center_y(shape->center_y() + dy);
 			movement = 0;
 		}
-		// Update facing direction.
-		//dir = tmpdir;
 	}
-	// Update real hit box for monster.
-	/*revise
-	char buffer[50];
-	sprintf(
-		buffer, "%s/%s_%d.png",
-		MonsterSetting::monster_imgs_root_path[static_cast<int>(type)],
-		MonsterSetting::dir_path_prefix[static_cast<int>(dir)],
-		bitmap_img_ids[static_cast<int>(dir)][bitmap_img_id]);
-	
-	*/
-
-	/*revise
-	ALLEGRO_BITMAP *bitmap = IC->get(buffer);
-	const double &cx = shape->center_x();
-	const double &cy = shape->center_y();
-	// We set the hit box slightly smaller than the actual bounding box of the image because there are mostly empty spaces near the edge of a image.
-	const int &h = al_get_bitmap_width(bitmap) * 0.8;
-	const int &w = al_get_bitmap_height(bitmap) * 0.8;
-
-	shape.reset(new Rectangle{
-		(cx - w / 2.), (cy - h / 2.),
-		(cx - w / 2. + w), (cy - h / 2. + h)
-	});
-	*/
 }
 
 
 void
 Monster::draw() {
-	/*
-	ImageCenter *IC = ImageCenter::get_instance();
-	char buffer[50];
-	sprintf(
-		buffer, "%s/%s_%d.png",
-		MonsterSetting::monster_imgs_root_path[static_cast<int>(type)],
-		MonsterSetting::dir_path_prefix[static_cast<int>(dir)],
-		bitmap_img_ids[static_cast<int>(dir)][bitmap_img_id]);
-	ALLEGRO_BITMAP *bitmap = IC->get(buffer);
-	al_draw_bitmap(
-		bitmap,
-		shape->center_x() - al_get_bitmap_width(bitmap) / 2,
-		shape->center_y() - al_get_bitmap_height(bitmap) / 2, 0);
-	*/
 	GIFCenter *GIFC = GIFCenter::get_instance();
     ALGIF_ANIMATION *gif = GIFC->get(gifPath[static_cast<int>(type)]);
 	if (!gif) {
@@ -269,14 +247,39 @@ Monster::draw() {
 
 void Monster::eating() {
     is_eating = true;
-	dir = Dir::DOWN;
+	if(dir==Dir::ANGRY){
+		dir = Dir::ANGRY_EAT;
+	}
+	else{
+		dir = Dir::EAT;
+	}
+	char buffer[50];
+	sprintf(buffer, "%s/%s.gif",
+			MonsterSetting::gif_root_path[static_cast<int>(type)],
+			MonsterSetting::gif_postfix[static_cast<int>(dir)]);
+	gifPath[static_cast<int>(type)] = std::string(buffer);
 }
 
 void Monster::resume() {
     is_eating = false;
-	dir = Dir::LEFT;
+	if(dir==Dir::ANGRY_EAT){
+		dir = Dir::ANGRY;
+	}
+	else{
+		dir = Dir::ORI;
+	}
+	char buffer[50];
+	sprintf(buffer, "%s/%s.gif",
+			MonsterSetting::gif_root_path[static_cast<int>(type)],
+			MonsterSetting::gif_postfix[static_cast<int>(dir)]);
+	gifPath[static_cast<int>(type)] = std::string(buffer);
 }
 
 void Monster::die() {
-	dir = Dir::UP;
+	dir = Dir::FALL;
+	char buffer[50];
+	sprintf(buffer, "%s/%s.gif",
+			MonsterSetting::gif_root_path[static_cast<int>(type)],
+			MonsterSetting::gif_postfix[static_cast<int>(dir)]);
+	gifPath[static_cast<int>(type)] = std::string(buffer);
 }

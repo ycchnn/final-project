@@ -8,7 +8,7 @@ class MonsterWolfKnight : public Monster
 {
 public:
 	MonsterWolfKnight(const std::vector<Point> &path) : Monster{path, MonsterType::WOLFKNIGHT} {
-		HP = 55;
+		HP = 120;
 		v = 20;
 		money = 30;
 		bitmap_img_ids.emplace_back(std::vector<int>({0, 1, 2, 3})); // UP

@@ -8,7 +8,7 @@ class MonsterCaveMan : public Monster
 {
 public:
 	MonsterCaveMan(const std::vector<Point> &path) : Monster{path, MonsterType::CAVEMAN} {
-		HP = 70;
+		HP = 120;
 		v = 20;
 		money = 20;
 		bitmap_img_ids.emplace_back(std::vector<int>({0, 1, 2, 3})); // UP

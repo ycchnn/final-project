@@ -108,7 +108,7 @@ Level::draw() {
 	if(level == -1) return;
 	for(auto &[i, j] : road_path) {
 		int x1 = i * LevelSetting::grid_size[level];
-		int y1 = j * LevelSetting::grid_size[level];
+		int y1 = j * LevelSetting::grid_size[level]+25;
 		int x2 = x1 + LevelSetting::grid_size[level];
 		int y2 = y1 + LevelSetting::grid_size[level];
 		al_draw_filled_rectangle(x1, y1, x2, y2, al_map_rgb(255, 244, 173));

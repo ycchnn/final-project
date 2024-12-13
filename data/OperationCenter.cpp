@@ -110,7 +110,7 @@ void OperationCenter::_update_monster_player() {
 			break;
 		}
 		else if(monsters[i]->HP <= 12){
-			//monsters[i]->die();
+			monsters[i]->die();
 		}
 		// Check if the monster reaches the end.
 		if(monsters[i]->get_path().empty()) {

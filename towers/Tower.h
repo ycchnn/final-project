@@ -42,7 +42,7 @@ namespace TowerSetting {
 		"./assets/gif/plants/bullet.gif",
 		"./assets/gif/plants/bullet.gif"
 	};
-	const std::array<int, static_cast<int>(TowerType::TOWERTYPE_MAX)> tower_price = {50, 100, 150, 200, 250};
+	const std::array<int, static_cast<int>(TowerType::TOWERTYPE_MAX)> tower_price = {50, 100, 50, 100, 150};
 };
 
 class Tower : public Object
