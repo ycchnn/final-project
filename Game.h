@@ -24,6 +24,7 @@ private:
 	 * @see Game::game_update()
 	 */
 	enum class STATE {
+		MENU,
 		START, // -> LEVEL
 		LEVEL, // -> PAUSE, END
 		PAUSE, // -> LEVEL
@@ -33,6 +34,7 @@ private:
 	ALLEGRO_EVENT event;
 	ALLEGRO_BITMAP *game_icon;
 	ALLEGRO_BITMAP *background;
+	ALLEGRO_BITMAP *startpage;
 private:
 	ALLEGRO_DISPLAY *display;
 	ALLEGRO_TIMER *timer;

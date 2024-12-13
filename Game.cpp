@@ -23,6 +23,7 @@ constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
 constexpr char game_start_sound_path[] = "./assets/sound/growl.wav";
 constexpr char background_img_path[] = "./assets/image/StartBackground.jpg";
 constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
+constexpr char menu_img_path[] = "./assets/image/menu.png";
 
 /**
  * @brief Game entry.
@@ -129,9 +130,6 @@ Game::game_init() {
 
 	// init font setting
 	FC->init();
-
-	ui = new UI();
-	ui->init();
 	
 	
 	//revise start
@@ -139,11 +137,18 @@ Game::game_init() {
 		DC->heros[i]->init(i*100+100);
 	//revise end
 	
+	startpage = IC->get(menu_img_path);
+	debug_log("Game state: change to MENU\n");
+	state = STATE::MENU;
+	al_start_timer(timer);
 	// game start
+	
 	background = IC->get(background_img_path);
+	/*
 	debug_log("Game state: change to START\n");
 	state = STATE::START;
 	al_start_timer(timer);
+	*/
 }
 
 /**
@@ -157,9 +162,43 @@ Game::game_update() {
 	DataCenter *DC = DataCenter::get_instance();
 	OperationCenter *OC = OperationCenter::get_instance();
 	SoundCenter *SC = SoundCenter::get_instance();
+	FontCenter *FC = FontCenter::get_instance();
 	static ALLEGRO_SAMPLE_INSTANCE *background = nullptr;
 
 	switch(state) {
+		case STATE::MENU: {
+			/*
+			// 绘制欢迎文字
+			al_draw_text(
+				FC->caviar_dreams[FontSize::LARGE], al_map_rgb(255, 255, 255),
+				DC->window_width / 2.0, DC->window_height / 4.0,
+				ALLEGRO_ALIGN_CENTRE, "WELCOME TO THE GAME");
+			// 绘制“开始”按钮
+			al_draw_filled_rectangle(
+				DC->window_width / 2.0 - 100, DC->window_height / 2.0 - 50,
+				DC->window_width / 2.0 + 100, DC->window_height / 2.0 + 50,
+				al_map_rgb(0, 128, 255));
+			al_draw_text(
+				FC->caviar_dreams[FontSize::MEDIUM], al_map_rgb(255, 255, 255),
+				DC->window_width / 2.0, DC->window_height / 2.0 - 20,
+				ALLEGRO_ALIGN_CENTRE, "START");
+			*/
+
+			float btn_x1 = DC->window_width / 2.0 - 100;
+			float btn_x2 = DC->window_width / 2.0 + 100;
+			float btn_y1 = DC->window_height / 2.0 - 50;
+			float btn_y2 = DC->window_height / 2.0 + 50;
+			if (DC->mouse_state[1] && !DC->prev_mouse_state[1] &&
+				DC->mouse.x >= 750 && DC->mouse.x <= 1000 &&
+				DC->mouse.y >= 100 && DC->mouse.y <= 250) {
+				debug_log("<Game> state: change to START\n");
+				state = STATE::START;
+				ui = new UI();
+				ui->init();
+			}
+
+			break;
+		}
 		case STATE::START: {
 			static bool is_played = false;
 			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
@@ -207,7 +246,7 @@ Game::game_update() {
 		}
 	}
 	// If the game is not paused, we should progress update.
-	if(state != STATE::PAUSE) {
+	if(state != STATE::PAUSE && state != STATE::MENU) {
 		DC->player->update();
 		SC->update();
 		ui->update();
@@ -240,7 +279,13 @@ Game::game_draw() {
 	al_clear_to_color(al_map_rgb(100, 100, 100));
 	if(state != STATE::END) {
 		// background
-		al_draw_bitmap(background, 0, 0, 0);
+		if(state == STATE:: MENU){
+			al_draw_bitmap(startpage, 0, 0, 0);
+		}
+		else{
+			al_draw_bitmap(background, 0, 0, 0);
+		}
+		
 		/* revise
 		if(DC->game_field_length < DC->window_width)
 			al_draw_filled_rectangle(
@@ -254,7 +299,7 @@ Game::game_draw() {
 				al_map_rgb(100, 100, 100));
 		*/
 		// user interface
-		if(state != STATE::START) {
+		if(state != STATE::START && state != STATE::MENU) {
 			//DC->level->draw();
 			//revise start
 			for(int i = 0; i<5; i++){

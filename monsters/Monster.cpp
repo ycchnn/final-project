@@ -246,18 +246,24 @@ Monster::draw() {
 }
 
 void Monster::eating() {
-    is_eating = true;
-	if(dir==Dir::ANGRY){
-		dir = Dir::ANGRY_EAT;
+	/*
+	if (is_eating == false){
+		if(dir==Dir::ANGRY){
+			dir = Dir::ANGRY_EAT;
+		}
+		else{
+			dir = Dir::EAT;
+		}
+		char buffer[50];
+		sprintf(buffer, "%s/%s.gif",
+				MonsterSetting::gif_root_path[static_cast<int>(type)],
+				MonsterSetting::gif_postfix[static_cast<int>(dir)]);
+		gifPath[static_cast<int>(type)] = std::string(buffer);
 	}
-	else{
-		dir = Dir::EAT;
-	}
-	char buffer[50];
-	sprintf(buffer, "%s/%s.gif",
-			MonsterSetting::gif_root_path[static_cast<int>(type)],
-			MonsterSetting::gif_postfix[static_cast<int>(dir)]);
-	gifPath[static_cast<int>(type)] = std::string(buffer);
+	is_eating = true;
+	*/
+	is_eating = true;
+	dir = Dir::EAT;
 }
 
 void Monster::resume() {
