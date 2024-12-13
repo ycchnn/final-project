@@ -96,7 +96,7 @@ public:
 	 */
 	std::vector<Bullet*> towerBullets;
 	//revise start
-	Hero *hero;
+	std::vector<Hero*> heros;
 	//revise end
 private:
 	DataCenter();

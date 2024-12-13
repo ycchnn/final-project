@@ -30,7 +30,9 @@ DataCenter::DataCenter() {
 	player = new Player();
 	level = new Level();
 	//revise start
-	//hero = new Hero();
+	for(int i = 0; i<5; i++){
+		heros.emplace_back(new Hero());
+	}
 	//revise end
 }
 
@@ -45,5 +47,8 @@ DataCenter::~DataCenter() {
 	}
 	for(Bullet *&b : towerBullets) {
 		delete b;
+	}
+	for(Hero *&h : heros) {
+		delete h;
 	}
 }

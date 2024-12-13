@@ -3,70 +3,43 @@
  #include "data/GIFCenter.h"
  #include "algif5/algif.h"
  #include "shapes/Rectangle.h"
+ #include "data/ImageCenter.h"
 
 //read gif file
- namespace HeroSetting {
-	static constexpr char gif_root_path[50] = "./assets/gif/Hero";
-	static constexpr char gif_postfix[][10] = {
-		"left", "right", "front", "back"
-	};
-}
 
-void Hero::init()
+void Hero::init(int y)
 {
-    for(size_t type = 0; type< static_cast<size_t>(HeroState::HEROSTATE_MAX); ++type)
-    {
-        char buffer[50];
-        sprintf(buffer, "%s/dragonite_%s.gif",
-                HeroSetting::gif_root_path,
-                HeroSetting::gif_postfix[static_cast<int>(type)]); //print to buffer array
-        gifPath[static_cast<HeroState>(type)] = std::string(buffer);
-    } //set the gif path
-
-    GIFCenter *GIFC = GIFCenter::get_instance();
-    ALGIF_ANIMATION *gif = GIFC->get(gifPath[state]);
-    DataCenter *DC = DataCenter::get_instance();
-    shape.reset(new Rectangle{DC->window_width/2,
-                            DC->window_height/2,
-                            DC->window_width/2 + gif->width,
-                            DC->window_height/2 + gif->height}
-    ); //set the initial position and hit box of Hero(initially at the center of screen)
+    ImageCenter *IC = ImageCenter::get_instance();
+    char buffer[50];
+    sprintf(buffer, "assets/image/weeder.png");
+    ALLEGRO_BITMAP *bitmap = IC->get(buffer);
+	const double &cx = 220;
+	const double &cy = y;
+	// We set the hit box slightly smaller than the actual bounding box of the image because there are mostly empty spaces near the edge of a image.
+	const int &h = al_get_bitmap_width(bitmap) * 0.8;
+	const int &w = al_get_bitmap_height(bitmap) * 0.8;
+	shape.reset(new Rectangle{
+		(cx - w / 2.), (cy - h / 2.),
+		(cx - w / 2. + w), (cy - h / 2. + h)
+	});
 }   
 
 void Hero::draw()
 {   //load gif
-    GIFCenter *GIFC = GIFCenter::get_instance();
-    ALGIF_ANIMATION *gif = GIFC->get(gifPath[state]);
-    //draw gif
-    algif_draw_gif(gif,
-                    shape->center_x() - gif->width/2,
-                    shape->center_y() - gif->height/2,
-                    0);       
+   ImageCenter *IC = ImageCenter::get_instance();
+	char buffer[50];
+    sprintf(buffer, "assets/image/weeder.png");
+	ALLEGRO_BITMAP *bitmap = IC->get(buffer);
+	al_draw_bitmap(
+		bitmap,
+		shape->center_x() - al_get_bitmap_width(bitmap) / 2,
+		shape->center_y() - al_get_bitmap_height(bitmap) / 2, 0);
 }
 
 void Hero::update()
 {
-    DataCenter *DC = DataCenter::get_instance();
-    if (DC->key_state[ALLEGRO_KEY_W])
-    {
-        shape->update_center_y(shape->center_y() - speed);
-        state = HeroState::BACK;
-    }
-    else if (DC->key_state[ALLEGRO_KEY_A])
-    {
-        shape->update_center_x(shape->center_x() - speed);
-        state = HeroState::LEFT;
-    }
-    else if (DC->key_state[ALLEGRO_KEY_S])
-    {
-        shape->update_center_y(shape->center_y() + speed);
-        state = HeroState::FRONT;
-    }
-    else if (DC->key_state[ALLEGRO_KEY_D])
-    {
+    if(state == HeroState::GO)
         shape->update_center_x(shape->center_x() + speed);
-        state = HeroState::RIGHT;
-    }
 }
 
 

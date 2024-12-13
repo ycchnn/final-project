@@ -135,7 +135,8 @@ Game::game_init() {
 	
 	
 	//revise start
-	//DC->hero->init();
+	for(int i = 0; i<5; i++)
+		DC->heros[i]->init(i*100+100);
 	//revise end
 	
 	// game start
@@ -211,7 +212,9 @@ Game::game_update() {
 		SC->update();
 		ui->update();
 		//revise start
-		//DC->hero->update();
+		for(int i = 0; i<5; i++){
+			DC->heros[i]->update();
+		}
 		//revise end
 		if(state != STATE::START) {
 			DC->level->update();
@@ -254,7 +257,9 @@ Game::game_draw() {
 		if(state != STATE::START) {
 			//DC->level->draw();
 			//revise start
-			//DC->hero->draw();
+			for(int i = 0; i<5; i++){
+				DC->heros[i]->draw();
+			}
 			//revise end
 			ui->draw();
 			OC->draw();

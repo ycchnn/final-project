@@ -6,24 +6,19 @@
 
 enum class HeroState
 {
-    LEFT,
-    RIGHT,
-    FRONT,
-    BACK,
-    HEROSTATE_MAX
+    STOP,
+    GO
 };
 
 class Hero : public Object
 {
 public:
-    void init();
+    void init(int y);
     void update();
     void draw();
-
+    HeroState state = HeroState::STOP;
 private:
-    HeroState state = HeroState::FRONT;
     double speed = 5;
-    std::map<HeroState, std::string> gifPath;
 };
 
 #endif

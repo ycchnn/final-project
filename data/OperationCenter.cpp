@@ -21,7 +21,7 @@ void OperationCenter::update() {
 	_update_monster_player();
 	//i2p revise start
 	_update_monster_tower();
-	//_update_monster_hero();
+	_update_monster_hero();
 	//revise end
 }
 
@@ -123,21 +123,23 @@ void OperationCenter::_update_monster_player() {
 
 
 //i2p revise s
-/*
 void OperationCenter::_update_monster_hero()
 {
 	DataCenter *DC = DataCenter::get_instance();
 	std::vector<Monster *> &monsters = DC->monsters;
 	for (size_t i = 0; i < monsters.size(); ++i)
 	{
-		if (monsters[i]->shape->overlap(*(DC->hero->shape)))
-		{
-			monsters[i]->HP = 0;
+		for(int j = 0; j<5; j++){
+			if (monsters[i]->shape->overlap(*(DC->heros[j]->shape)))
+			{
+				monsters[i]->HP = 0;
+				DC->heros[j]->state = HeroState::GO;
+			}
 		}
 	}
 }
 //i2p revise e
-*/
+
 
 void OperationCenter::draw() {
 	_draw_monster();
