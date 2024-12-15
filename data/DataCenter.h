@@ -31,6 +31,7 @@ public:
 	}
 	~DataCenter();
 public:
+	void reset();
 	double FPS;
 	int window_width, window_height;
 	/**

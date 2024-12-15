@@ -131,18 +131,11 @@ Game::game_init() {
 	// init font setting
 	FC->init();
 	
-	
-	//revise start
-	for(int i = 0; i<5; i++)
-		DC->heros[i]->init(i*100+100);
-	//revise end
-	
 	startpage = IC->get(menu_img_path);
 	debug_log("Game state: change to MENU\n");
 	state = STATE::MENU;
 	al_start_timer(timer);
 	// game start
-	
 	background = IC->get(background_img_path);
 	/*
 	debug_log("Game state: change to START\n");
@@ -167,22 +160,6 @@ Game::game_update() {
 
 	switch(state) {
 		case STATE::MENU: {
-			/*
-			// 绘制欢迎文字
-			al_draw_text(
-				FC->caviar_dreams[FontSize::LARGE], al_map_rgb(255, 255, 255),
-				DC->window_width / 2.0, DC->window_height / 4.0,
-				ALLEGRO_ALIGN_CENTRE, "WELCOME TO THE GAME");
-			// 绘制“开始”按钮
-			al_draw_filled_rectangle(
-				DC->window_width / 2.0 - 100, DC->window_height / 2.0 - 50,
-				DC->window_width / 2.0 + 100, DC->window_height / 2.0 + 50,
-				al_map_rgb(0, 128, 255));
-			al_draw_text(
-				FC->caviar_dreams[FontSize::MEDIUM], al_map_rgb(255, 255, 255),
-				DC->window_width / 2.0, DC->window_height / 2.0 - 20,
-				ALLEGRO_ALIGN_CENTRE, "START");
-			*/
 
 			float btn_x1 = DC->window_width / 2.0 - 100;
 			float btn_x2 = DC->window_width / 2.0 + 100;
@@ -193,9 +170,13 @@ Game::game_update() {
 				DC->mouse.y >= 100 && DC->mouse.y <= 250) {
 				debug_log("<Game> state: change to START\n");
 				state = STATE::START;
-				ui = new UI();
-				ui->init();
 			}
+			else if(DC->mouse_state[1] && !DC->prev_mouse_state[1] &&
+				DC->mouse.x >= 750 && DC->mouse.x <= 1000 &&
+				DC->mouse.y >= 300 && DC->mouse.y <= 500){
+					debug_log("<Game> state: change to END\n");
+					state = STATE::END;
+				}
 
 			break;
 		}
@@ -204,13 +185,22 @@ Game::game_update() {
 			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
 			if(!is_played) {
 				instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				delete ui;  // 清理旧的 UI 对象
+				ui = new UI();
+				ui->init();
+				DC->reset();
+				for(int i = 0; i<5; i++)
+					DC->heros[i]->init(i*100+100);
+				debug_log("DataCenter has been reset.\n");
+				// 重新加载第一关
 				DC->level->load_level(1);
+				debug_log("<Game> All resources have been reset.\n");
 				is_played = true;
 			}
-
 			if(!SC->is_playing(instance)) {
 				debug_log("<Game> state: change to LEVEL\n");
 				state = STATE::LEVEL;
+				is_played = false;
 			}
 			break;
 		} case STATE::LEVEL: {
@@ -227,11 +217,12 @@ Game::game_update() {
 			}
 			if(DC->level->remain_monsters() == 0 && DC->monsters.size() == 0) {
 				debug_log("<Game> state: change to END Monster\n");
-				state = STATE::END;
+				state = STATE::MENU;
+				
 			}
 			if(DC->player->HP == 0) {
 				debug_log("<Game> state: change to END HP\n");
-				state = STATE::END;
+				state = STATE::MENU;
 			}
 			break;
 		} case STATE::PAUSE: {
@@ -246,7 +237,8 @@ Game::game_update() {
 		}
 	}
 	// If the game is not paused, we should progress update.
-	if(state != STATE::PAUSE && state != STATE::MENU) {
+	if(state == STATE::LEVEL) {
+		//debug_log("<updating\n");
 		DC->player->update();
 		SC->update();
 		ui->update();
@@ -255,7 +247,7 @@ Game::game_update() {
 			DC->heros[i]->update();
 		}
 		//revise end
-		if(state != STATE::START) {
+		if(state != STATE::START && state != STATE::MENU) {
 			DC->level->update();
 			OC->update();
 		}
@@ -299,7 +291,7 @@ Game::game_draw() {
 				al_map_rgb(100, 100, 100));
 		*/
 		// user interface
-		if(state != STATE::START && state != STATE::MENU) {
+		if(state != STATE::START && state != STATE::MENU && state!= STATE::START) {
 			//DC->level->draw();
 			//revise start
 			for(int i = 0; i<5; i++){
@@ -329,7 +321,14 @@ Game::game_draw() {
 }
 
 Game::~Game() {
-	al_destroy_display(display);
-	al_destroy_timer(timer);
-	al_destroy_event_queue(event_queue);
+	DataCenter *DC = DataCenter::get_instance();
+    delete ui;
+    for (int i = 0; i < 5; i++) {
+        delete DC->heros[i];
+    }
+
+    al_destroy_display(display);
+    al_destroy_timer(timer);
+    al_destroy_event_queue(event_queue);
 }
+

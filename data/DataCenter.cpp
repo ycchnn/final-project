@@ -52,3 +52,30 @@ DataCenter::~DataCenter() {
 		delete h;
 	}
 }
+
+void DataCenter::reset(){
+	delete player;
+	player = new Player();
+
+    // 清理关卡数据
+    delete level;
+    level = new Level();
+
+    // 清空怪物列表
+    for (Monster* monster : monsters) {
+        delete monster;
+    }
+    monsters.clear();
+
+    // 重置英雄数据
+    for (int i = 0; i < 5; ++i) {
+        delete heros[i];
+        heros[i] = new Hero();
+    }
+
+    // 其他资源的重置逻辑...
+	 for (Tower* tower : towers) {
+        delete tower;
+    }
+    towers.clear();
+}

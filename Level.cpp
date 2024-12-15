@@ -12,7 +12,8 @@ using namespace std;
 
 // fixed settings
 namespace LevelSetting {
-	constexpr char level_path_format[] = "./assets/level/LEVEL%d.txt";
+	constexpr char level_path_format
+	[] = "./assets/level/LEVEL%d.txt";
 	//! @brief Grid size for each level.
 	constexpr array<int, 4> grid_size = {
 		100, 100, 100, 100
@@ -76,10 +77,11 @@ Level::load_level(int lvl) {
 */
 void
 Level::update() {
-	if(monster_spawn_counter) {
+	if(monster_spawn_counter>0) {
 		monster_spawn_counter--;
 		return;
 	}
+	//debug_log("<level> monster_spawn %d\n", monster_spawn_counter);
 	DataCenter *DC = DataCenter::get_instance();
 	/* revise
 	for(size_t i = 0; i < num_of_monsters.size(); ++i) {
@@ -90,7 +92,7 @@ Level::update() {
 	}*/
 	for (size_t i = 0; i < num_of_monsters.size(); ++i) {
         if (num_of_monsters[i] == 0) continue;
-
+		//debug_log("<level> monster generate\n");
         // 生成從右到左的直線路徑
         vector<Point> monster_path = generate_right_to_left_path();
 
