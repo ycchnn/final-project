@@ -7,6 +7,7 @@
 #include <allegro5/mouse.h>
 #include "../shapes/Point.h"
 
+class Sun;
 class Player;
 class Level;
 class Monster;
@@ -98,6 +99,7 @@ public:
 	//revise start
 	std::vector<Hero*> heros;
 	//revise end
+	std::vector<Sun*> suns;
 private:
 	DataCenter();
 };

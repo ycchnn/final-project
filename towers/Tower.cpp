@@ -79,13 +79,16 @@ Tower::Tower(const Point &p, double attack_range, int attack_freq, TowerType typ
 */
 void
 Tower::update() {
+	TowerArcane* sunTower = dynamic_cast<TowerArcane*>(this);
 	if(counter) counter--;
 	else {
-		/*DataCenter *DC = DataCenter::get_instance();
-		for(Monster *monster : DC->monsters) {
-			if(attack(monster)) break;
-		}*/
-	attack();
+		if(type == TowerType::ARCHER) attack();
+		else if(sunTower)
+		{
+			//std::cout << "Creating sun from TowerArcane" << std::endl; // 打印是否進入該條件
+			sunTower->create_sun();
+			counter = attack_freq;
+		}
 	}
 }
 

@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "towers/Tower.h"
 #include "Level.h"
+#include "sun.h"
 
 // fixed settings
 constexpr char love_img_path[] = "./assets/image/love.png";
@@ -73,6 +74,23 @@ UI::update() {
 
 	switch(state) {
 		case STATE::HALT: {
+			//sun
+			for (Sun *sun : DC->suns) {
+                if (sun->get_region().overlap(Rectangle{mouse.x, mouse.y, mouse.x + 1, mouse.y + 1})) {
+                    if (DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
+                        // 當鼠標點擊時，拾取sun
+                        debug_log("<UI> Sun picked up!\n");
+                        DC->player->coin += 10;  
+                        // 移除sun
+                        auto it = std::find(DC->suns.begin(), DC->suns.end(), sun);
+                        if (it != DC->suns.end()) {
+                            DC->suns.erase(it);
+                        }
+                        break;
+                    }
+                }
+            } 
+			//tower
 			for(size_t i = 0; i < tower_items.size(); ++i) {
 				auto &[bitmap, p, price] = tower_items[i];
 				int w = al_get_bitmap_width(bitmap);

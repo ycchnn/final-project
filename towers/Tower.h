@@ -62,7 +62,7 @@ public:
 public:
 	Tower(const Point &p, double attack_range, int attack_freq, TowerType type, int h);
 	virtual ~Tower() {}
-	void update();
+	virtual void update();
 	virtual bool attack(/*Object *target*/);
 	void draw();
 	Rectangle get_region() const;

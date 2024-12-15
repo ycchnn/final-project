@@ -6,6 +6,7 @@
 #include "../Player.h"
 //revise start
 #include "../Hero.h"
+#include "../sun.h"
 //revise end
 
 void OperationCenter::update() {
@@ -23,6 +24,7 @@ void OperationCenter::update() {
 	_update_monster_tower();
 	_update_monster_hero();
 	//revise end
+	_update_sun();
 }
 
 void OperationCenter::_update_monster() {
@@ -140,11 +142,18 @@ void OperationCenter::_update_monster_hero()
 }
 //i2p revise e
 
+void OperationCenter::_update_sun()
+{
+	std::vector<Sun *> &suns = DataCenter::get_instance()->suns;
+	for(Sun *sun : suns)
+		sun->update();
+}
 
 void OperationCenter::draw() {
 	_draw_monster();
 	_draw_tower();
 	_draw_towerBullet();
+	_draw_sun();
 }
 
 void OperationCenter::_draw_monster() {
@@ -164,3 +173,10 @@ void OperationCenter::_draw_towerBullet() {
 	for(Bullet *towerBullet : towerBullets)
 		towerBullet->draw();
 }
+
+void OperationCenter::_draw_sun() {
+    std::vector<Sun *> &suns = DataCenter::get_instance()->suns;
+	for(Sun *sun : suns)
+		sun->draw();
+}
+
