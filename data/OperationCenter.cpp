@@ -102,16 +102,15 @@ void OperationCenter::_update_monster_player() {
 	for(size_t i = 0; i < monsters.size(); ++i) {
 		// Check if the monster is killed.
 		if(monsters[i]->HP <= 0) {
-			// Monster gets killed. Player receives money.
-			player->coin += monsters[i]->get_money();
-			monsters.erase(monsters.begin()+i);
-			--i;
-			// Since the current monsster is killed, we can directly proceed to next monster.
-			break;
-		}
-		else if(monsters[i]->HP <= 12){
 			monsters[i]->die();
+			monsters[i]->update_death_timer();
 		}
+		if (monsters[i]->is_dead()) {
+			//player->coin += monsters[i]->get_money();
+            monsters.erase(monsters.begin()+i);
+			--i;
+            break; 
+        }
 		// Check if the monster reaches the end.
 		if(monsters[i]->get_path().empty()) {
 			monsters.erase(monsters.begin()+i);
