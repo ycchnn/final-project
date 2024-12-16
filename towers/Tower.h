@@ -69,6 +69,7 @@ public:
 	virtual Bullet *create_bullet(/*Object *target*/) = 0;
 	virtual const double attack_range() const = 0;
 	TowerType type;
+	bool planted = false;
 	int hp;
 private:
 	/**

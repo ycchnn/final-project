@@ -160,7 +160,10 @@ UI::update() {
 			if(!place) {
 				debug_log("<UI> Tower place failed.\n");
 			} else {
-				DC->towers.emplace_back(Tower::create_tower(static_cast<TowerType>(on_item), mouse));
+				Tower *new_tower = Tower::create_tower(static_cast<TowerType>(on_item), mouse);
+    			new_tower->planted = true;  // 设置 planted 为 true
+				debug_log("<UI> Tower planted status: %d\n", new_tower->planted);  // 调试信息
+				DC->towers.emplace_back(new_tower);
 				DC->player->coin -= std::get<2>(tower_items[on_item]);
 			}
 			debug_log("<UI> state: change to HALT\n");
@@ -228,6 +231,7 @@ UI::draw() {
 				selected_tower->shape->update_center_x(mouse.x);
 				selected_tower->shape->update_center_y(mouse.y);
 			}
+			selected_tower->draw();
 		}
 		case STATE::PLACE: {
 			// If we select a tower from menu, we need to preview where the tower will be built and its attack range.
@@ -239,11 +243,16 @@ UI::draw() {
 			al_draw_bitmap(bitmap, mouse.x - w / 2, mouse.y - h / 2, 0);
 			break;
 			*/
-			ALGIF_ANIMATION *animation = Tower::get_animation(static_cast<TowerType>(on_item));
+			/*ALGIF_ANIMATION *animation = Tower::get_animation(static_cast<TowerType>(on_item));
 			int w = animation->width;
 			int h = animation->height;
-			algif_draw_gif(animation, mouse.x - w / 2, mouse.y - h / 2, 0);
+			algif_draw_gif(animation, mouse.x - w / 2, mouse.y - h / 2, 0);*/
+			selected_tower->draw();
 			break;
 		}
 	}
+	// 绘制已放置的塔
+    /*for (Tower *tower : DC->towers) {
+        tower->draw();
+    }*/
 }
