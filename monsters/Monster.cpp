@@ -17,7 +17,7 @@ using namespace std;
 
 // fixed settings
 enum class Dir {
-	ORI, EAT, FALL, NOHEAD, ANGRY, ANGRY_EAT, LOSEPAPER, 
+	ORI, EAT, FALL, NOHEAD, ANGRY, ANGRY_EAT, LOSEPAPER, ASH,
 };
 namespace MonsterSetting {
 	/*revise
@@ -38,7 +38,7 @@ namespace MonsterSetting {
 		"./assets/gif/zombie/flag"
 	};
 	static constexpr char gif_postfix[][12] = {
-		"original", "eat", "fall", "nohead", "angry", "angry_eat", "losepaper", 
+		"original", "eat", "fall", "nohead", "angry", "angry_eat", "losepaper", "ash", 
 	};
 	//revise end
 }
@@ -282,21 +282,19 @@ void Monster::resume() {
 	gifPath[static_cast<int>(type)] = std::string(buffer);
 }
 
-void Monster::die() {
-	if(!dead){
-		dir = Dir::FALL;
-	char buffer[50];
-	sprintf(buffer, "%s/%s.gif",
-		MonsterSetting::gif_root_path[static_cast<int>(type)],
-		MonsterSetting::gif_postfix[static_cast<int>(dir)]);
-		gifPath[static_cast<int>(type)] = std::string(buffer);
-	}
-	// 设置死亡倒计时时间（单位秒）
-	
-	//if (death_timer <= 0) {
-		//  death_timer = 1.0f;
-	//}
-	dead = true;
+void Monster::die(int x) {
+		if(!dead){
+			if(x)
+				dir = Dir::FALL;
+			else
+				dir = Dir::ASH;
+		char buffer[50];
+		sprintf(buffer, "%s/%s.gif",
+			MonsterSetting::gif_root_path[static_cast<int>(type)],
+			MonsterSetting::gif_postfix[static_cast<int>(dir)]);
+			gifPath[static_cast<int>(type)] = std::string(buffer);
+		}
+		dead = true;
 }
 
 Rectangle

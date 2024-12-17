@@ -7,8 +7,8 @@
 //revise start
 #include "../Hero.h"
 #include "../sun.h"
-//revise end
 #include <iostream>
+//revise end
 
 void OperationCenter::update() {
 	// Update monsters.
@@ -23,9 +23,10 @@ void OperationCenter::update() {
 	_update_monster_player();
 	//i2p revise start
 	_update_monster_tower();
-	//_update_monster_hero();
+	_update_monster_hero();
 	//revise end
 	_update_sun();
+	_cherrybomb();
 }
 
 void OperationCenter::_update_monster() {
@@ -68,6 +69,10 @@ void OperationCenter::_update_monster_towerBullet() {
 				monsters[i]->HP -= towerBullets[j]->get_dmg();
 				towerBullets.erase(towerBullets.begin()+j);
 				--j;
+				if(monsters[i]->HP <=0 && !monsters[i]->dead){
+					monsters[i]->die(1);
+					break;
+				}
 			}
 		}
 	}
@@ -88,9 +93,11 @@ void OperationCenter::_update_monster_tower() {
 				{
 					std::cout << "bomb\n" ;
 					monsters[i]->HP = 0;
+					if(!monsters[i]->dead){
+						monsters[i]->die(0);
+					}
                     towers.erase(towers.begin() + j);
                     --j;
-                    monsters[i]->resume();
                     break;
 				}
 				else{
@@ -108,15 +115,13 @@ void OperationCenter::_update_monster_tower() {
 	}
 }
 
-
 void OperationCenter::_update_monster_player() {
 	DataCenter *DC = DataCenter::get_instance();
 	std::vector<Monster*> &monsters = DC->monsters;
 	Player *&player = DC->player;
 	for(size_t i = 0; i < monsters.size(); ++i) {
 		// Check if the monster is killed.
-		if(monsters[i]->HP <= 0) {
-			monsters[i]->die();
+		if(monsters[i]->dead ){
 			monsters[i]->update_death_timer();
 		}
 		if (monsters[i]->is_dead()) {
@@ -146,12 +151,46 @@ void OperationCenter::_update_monster_hero()
 			if (monsters[i]->shape->overlap(*(DC->heros[j]->shape)))
 			{
 				monsters[i]->HP = 0;
+				if(!monsters[i]->dead)
+					monsters[i]->die(1);
 				DC->heros[j]->state = HeroState::GO;
 			}
 		}
 	}
 }
 //i2p revise e
+
+void OperationCenter::_cherrybomb()
+{
+	DataCenter *DC = DataCenter::get_instance();
+	std::vector<Monster *> &monsters = DC->monsters;
+	std::vector<Tower*> &towers = DC->towers;
+	for(size_t j = 0; j < towers.size(); ++j){
+		if(towers[j]->type == TowerType::STORM){
+			bool bombed = false;
+			for (size_t i = 0; i < monsters.size(); ++i)
+			{
+				
+				if (monsters[i]->shape->overlap(towers[j]->get_attack_range()))
+				{
+					bombed = true;
+					//monsters[i]->HP = 0;
+					if(!monsters[i]->dead){
+						monsters[i]->die(0);
+					}
+				}
+				
+			}
+			if(bombed){
+					towers.erase(towers.begin()+j);
+					--j;
+					break;
+			}
+		}
+		
+	}
+}
+
 
 void OperationCenter::_update_sun()
 {
@@ -190,3 +229,4 @@ void OperationCenter::_draw_sun() {
 	for(Sun *sun : suns)
 		sun->draw();
 }
+

@@ -31,7 +31,7 @@ public:
 	int current_frame = 0;     // 當前幀索引
     int frame_timer = 0;       // 計算幀時間
 	float death_timer = 1.4f; // -1 表示未死亡状态
-    void die();
+    void die(int x);
     bool is_dead() const {
         return death_timer <= 0.0f;
     }

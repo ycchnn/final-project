@@ -66,6 +66,7 @@ public:
 	virtual bool attack(/*Object *target*/);
 	void draw();
 	Rectangle get_region() const;
+	Rectangle get_attack_range() const;
 	virtual Bullet *create_bullet(/*Object *target*/) = 0;
 	virtual const double attack_range() const = 0;
 	TowerType type;

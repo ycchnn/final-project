@@ -182,3 +182,47 @@ Tower::get_region() const {
 		shape->center_y() - h/2 + h
 	};
 }
+
+
+Rectangle
+Tower::get_attack_range() const {
+switch(type) {
+		case TowerType::ARCANE: {
+			return {
+			shape->center_x(),
+			shape->center_y(),
+			shape->center_x()+1000,
+			shape->center_y()+30
+		};
+		} case TowerType::ARCHER: {
+			return {
+				shape->center_x(),
+				shape->center_y(),
+				shape->center_x(),
+				shape->center_y()
+			};
+		} case TowerType::CANON: {
+			return {
+				shape->center_x(),
+				shape->center_y(),
+				shape->center_x(),
+				shape->center_y()
+			};
+		} case TowerType::POISON: {
+			return {
+				shape->center_x() - 20,
+				shape->center_y() - 30,
+				shape->center_x() + 30,
+				shape->center_y() + 50
+			};
+		} case TowerType::STORM: {
+			return {
+			shape->center_x() - 130,
+			shape->center_y() - 150,
+			shape->center_x() + 130,
+			shape->center_y() + 150
+			};
+		} case TowerType::TOWERTYPE_MAX: {}
+	}
+}
+
