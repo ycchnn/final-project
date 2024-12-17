@@ -24,6 +24,7 @@ constexpr char game_start_sound_path[] = "./assets/sound/growl.wav";
 constexpr char background_img_path[] = "./assets/image/StartBackground.jpg";
 constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
 constexpr char menu_img_path[] = "./assets/image/menu.png";
+constexpr char end_img_path[] = "./assets/image/zombiewon.png";
 
 /**
  * @brief Game entry.
@@ -137,6 +138,7 @@ Game::game_init() {
 	al_start_timer(timer);
 	// game start
 	background = IC->get(background_img_path);
+	endword = IC->get(end_img_path);
 	/*
 	debug_log("Game state: change to START\n");
 	state = STATE::START;
@@ -185,15 +187,17 @@ Game::game_update() {
 			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
 			if(!is_played) {
 				instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				delete ui;  // 清理旧的 UI 对象
+				delete ui; 
 				ui = new UI();
 				ui->init();
 				DC->reset();
 				for(int i = 0; i<5; i++)
 					DC->heros[i]->init(i*100+100);
 				debug_log("DataCenter has been reset.\n");
-				// 重新加载第一关
 				DC->level->load_level(1);
+				
+				end = false;
+				end_screen_timer = 0;
 				debug_log("<Game> All resources have been reset.\n");
 				is_played = true;
 			}
@@ -220,9 +224,16 @@ Game::game_update() {
 				state = STATE::MENU;
 				
 			}
-			if(DC->player->HP == 0) {
+			if(DC->player->HP == 0 && end == false) {
+				end = true;
 				debug_log("<Game> state: change to END HP\n");
-				state = STATE::MENU;
+			}
+			if(end){
+				end_screen_timer++;
+				if (end_screen_timer >= DC->FPS * 8) {  // 鏄剧ず3绉掗挓
+					debug_log("<Game> state: change to MENU\n");
+					state = STATE::MENU;
+				}
 			}
 			break;
 		} case STATE::PAUSE: {
@@ -301,10 +312,15 @@ Game::game_draw() {
 			ui->draw();
 			OC->draw();
 		}
+
 	}
 	switch(state) {
 		case STATE::START: {
 		} case STATE::LEVEL: {
+			if(end){
+			al_draw_filled_rectangle(0, 0, DC->window_width, DC->window_height, al_map_rgba(50, 50, 50, 64));
+			al_draw_bitmap(endword, 400, 100, 0);
+		}
 			break;
 		} case STATE::PAUSE: {
 			// game layout cover
@@ -331,4 +347,3 @@ Game::~Game() {
     al_destroy_timer(timer);
     al_destroy_event_queue(event_queue);
 }
-
