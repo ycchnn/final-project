@@ -49,6 +49,7 @@ public:
 	float brightness = 1;
 	Dir dir;
 	bool dead;
+	Rectangle get_region() const;
 protected:
 	/**
 	 * @var HP
