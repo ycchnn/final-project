@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "towers/Tower.h"
 #include "Level.h"
+#include "sun.h"
 
 // fixed settings
 constexpr char love_img_path[] = "./assets/image/love.png";
@@ -73,6 +74,23 @@ UI::update() {
 
 	switch(state) {
 		case STATE::HALT: {
+			//sun
+			for (Sun *sun : DC->suns) {
+                if (sun->get_region().overlap(Rectangle{mouse.x, mouse.y, mouse.x + 1, mouse.y + 1})) {
+                    if (DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
+                        // 當鼠標點擊時，拾取sun
+                        debug_log("<UI> Sun picked up!\n");
+                        DC->player->coin += 10;  
+                        // 移除sun
+                        auto it = std::find(DC->suns.begin(), DC->suns.end(), sun);
+                        if (it != DC->suns.end()) {
+                            DC->suns.erase(it);
+                        }
+                        break;
+                    }
+                }
+            } 
+			//tower
 			for(size_t i = 0; i < tower_items.size(); ++i) {
 				auto &[bitmap, p, price] = tower_items[i];
 				int w = al_get_bitmap_width(bitmap);
@@ -142,7 +160,10 @@ UI::update() {
 			if(!place) {
 				debug_log("<UI> Tower place failed.\n");
 			} else {
-				DC->towers.emplace_back(Tower::create_tower(static_cast<TowerType>(on_item), mouse));
+				Tower *new_tower = Tower::create_tower(static_cast<TowerType>(on_item), mouse);
+    			new_tower->planted = true;  // 设置 planted 为 true
+				debug_log("<UI> Tower planted status: %d\n", new_tower->planted);  // 调试信息
+				DC->towers.emplace_back(new_tower);
 				DC->player->coin -= std::get<2>(tower_items[on_item]);
 			}
 			debug_log("<UI> state: change to HALT\n");
@@ -210,6 +231,7 @@ UI::draw() {
 				selected_tower->shape->update_center_x(mouse.x);
 				selected_tower->shape->update_center_y(mouse.y);
 			}
+			selected_tower->draw();
 		}
 		case STATE::PLACE: {
 			// If we select a tower from menu, we need to preview where the tower will be built and its attack range.
@@ -221,11 +243,16 @@ UI::draw() {
 			al_draw_bitmap(bitmap, mouse.x - w / 2, mouse.y - h / 2, 0);
 			break;
 			*/
-			ALGIF_ANIMATION *animation = Tower::get_animation(static_cast<TowerType>(on_item));
+			/*ALGIF_ANIMATION *animation = Tower::get_animation(static_cast<TowerType>(on_item));
 			int w = animation->width;
 			int h = animation->height;
-			algif_draw_gif(animation, mouse.x - w / 2, mouse.y - h / 2, 0);
+			algif_draw_gif(animation, mouse.x - w / 2, mouse.y - h / 2, 0);*/
+			selected_tower->draw();
 			break;
 		}
 	}
+	// 绘制已放置的塔
+    /*for (Tower *tower : DC->towers) {
+        tower->draw();
+    }*/
 }

@@ -7,6 +7,7 @@
 #include "../towers/Bullet.h"
 //revise start
 #include "../Hero.h"
+#include "../sun.h"
 //revise end
 
 // fixed settings
@@ -51,6 +52,9 @@ DataCenter::~DataCenter() {
 	for(Hero *&h : heros) {
 		delete h;
 	}
+	for(Sun *&s : suns) {  
+        delete s;
+    }
 }
 
 void DataCenter::reset(){

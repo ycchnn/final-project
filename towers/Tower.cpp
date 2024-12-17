@@ -71,6 +71,7 @@ Tower::Tower(const Point &p, double attack_range, int attack_freq, TowerType typ
 	//revise
 	animation = GIFC->get(TowerSetting::tower_gif_path[static_cast<int>(type)]);
 	hp = h;
+	planted = false;
 }
 
 /**
@@ -79,13 +80,16 @@ Tower::Tower(const Point &p, double attack_range, int attack_freq, TowerType typ
 */
 void
 Tower::update() {
+	TowerArcane* sunTower = dynamic_cast<TowerArcane*>(this);
 	if(counter) counter--;
 	else {
-		/*DataCenter *DC = DataCenter::get_instance();
-		for(Monster *monster : DC->monsters) {
-			if(attack(monster)) break;
-		}*/
-	attack();
+		if(type == TowerType::ARCHER) attack();
+		else if(sunTower)
+		{
+			//std::cout << "Creating sun from TowerArcane" << std::endl; // 打印是否進入該條件
+			sunTower->create_sun();
+			counter = attack_freq;
+		}
 	}
 }
 
@@ -114,11 +118,41 @@ Tower::draw() {
 	*/
 	GIFCenter *GIFC = GIFCenter::get_instance();
     //draw gif
-    algif_draw_gif(animation,
+    /*algif_draw_gif(animation,
                     shape->center_x() - animation->width/2,
                     shape->center_y() - animation->height/2,
-                    0);       
+                    0);       */
 	//revise end
+	/*if (planted) {
+        // 播放動畫
+        algif_draw_gif(animation,
+                       shape->center_x() - animation->width / 2,
+                       shape->center_y() - animation->height / 2,
+                       0);
+    } else {
+        // 定格在第一幀
+		debug_log("not planted\n");
+        ALLEGRO_BITMAP *first_frame = algif_get_bitmap(animation, 0);
+        al_draw_bitmap(first_frame,
+                       shape->center_x() - al_get_bitmap_width(first_frame) / 2,
+                       shape->center_y() - al_get_bitmap_height(first_frame) / 2,
+                       0);
+    }*/
+	if (!planted) {
+        // 预览状态：显示动画的第一帧（定格）
+        ALLEGRO_BITMAP *first_frame = algif_get_frame_bitmap(animation, 0);
+        if (first_frame) {
+            al_draw_bitmap(first_frame, shape->center_x() - al_get_bitmap_width(first_frame) / 2,
+                       shape->center_y() - al_get_bitmap_height(first_frame) / 2,
+                       0);
+        }
+    } else {
+        // 已放置状态：播放完整动画
+        algif_draw_gif(animation,
+                       shape->center_x() - animation->width / 2,
+                       shape->center_y() - animation->height / 2,
+                       0);
+    }
 }
 
 /**
