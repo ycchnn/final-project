@@ -76,6 +76,7 @@ Monster *Monster::create_monster(MonsterType type, const vector<Point> &path) {
 Monster::Monster(const vector<Point> &path, MonsterType type) {
 	DataCenter *DC = DataCenter::get_instance();
 	is_eating = false;
+	dead = false;
 	shape.reset(new Rectangle{0, 0, 0, 0});
 	this->type = type;
 	dir = Dir::ORI;
@@ -152,7 +153,7 @@ Monster::update() {
 		}
 	}
 	else if(type == MonsterType::WOLFKNIGHT){
-		if(HP<90){
+		if(HP<90 && HP>0){
 			v = 30;
 			if(dir == Dir::ORI){
 				char buffer[50];
@@ -174,7 +175,7 @@ Monster::update() {
 	}
 
 		
-	if (is_eating) {
+	if (is_eating || dead) {
         return; // 怪物暫停，不前進
 	}
 	
@@ -282,10 +283,19 @@ void Monster::resume() {
 }
 
 void Monster::die() {
-	dir = Dir::FALL;
-	char buffer[50];
-	sprintf(buffer, "%s/%s.gif",
+		if(!dead){
+			dir = Dir::FALL;
+		char buffer[50];
+		sprintf(buffer, "%s/%s.gif",
 			MonsterSetting::gif_root_path[static_cast<int>(type)],
 			MonsterSetting::gif_postfix[static_cast<int>(dir)]);
-	gifPath[static_cast<int>(type)] = std::string(buffer);
-}
+			gifPath[static_cast<int>(type)] = std::string(buffer);
+		}
+        // 设置死亡倒计时时间（单位秒）
+		
+        //if (death_timer <= 0) {
+          //  death_timer = 1.0f;
+        //}
+		dead = true;
+    }
+

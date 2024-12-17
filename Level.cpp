@@ -77,7 +77,11 @@ Level::load_level(int lvl) {
 */
 void
 Level::update() {
-	if(monster_spawn_counter>0) {
+	if(monster_spawn_counter<0) {
+		monster_spawn_counter = 0;
+		return;
+	}
+	if(monster_spawn_counter) {
 		monster_spawn_counter--;
 		return;
 	}

@@ -30,7 +30,17 @@ public:
 	void resume();
 	int current_frame = 0;     // 當前幀索引
     int frame_timer = 0;       // 計算幀時間
-	void die();
+	float death_timer = 1.4f; // -1 表示未死亡状态
+    void die();
+    bool is_dead() const {
+        return death_timer <= 0.0f;
+    }
+    void update_death_timer() {
+		float delta_time = 0.016f;
+        if (death_timer >= 0) {
+            death_timer -= delta_time;
+        }
+    }
 	const int &get_money() const { return money; }
 	int HP;
 	const std::queue<Point> &get_path() const { return path; }
@@ -38,6 +48,7 @@ public:
 	float hit_timer = 0;
 	float brightness = 1;
 	Dir dir;
+	bool dead;
 protected:
 	/**
 	 * @var HP
