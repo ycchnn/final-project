@@ -16,9 +16,11 @@ Player::Player() : HP(PlayerSetting::init_HP), coin(PlayerSetting::init_coin) {
 
 void
 Player::update() {
+	/*
 	if(coin_counter) --coin_counter;
 	else {
 		coin += coin_increase;
 		coin_counter = coin_freq;
 	}
+	*/
 }
