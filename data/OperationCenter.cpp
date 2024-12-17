@@ -23,7 +23,7 @@ void OperationCenter::update() {
 	_update_monster_player();
 	//i2p revise start
 	_update_monster_tower();
-	_update_monster_hero();
+	//_update_monster_hero();
 	//revise end
 	_update_sun();
 }

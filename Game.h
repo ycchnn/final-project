@@ -18,6 +18,8 @@ public:
 	void game_init();
 	bool game_update();
 	void game_draw();
+	float end_screen_timer;
+	bool end;
 private:
 	/**
 	 * @brief States of the game process in game_update.
@@ -35,6 +37,7 @@ private:
 	ALLEGRO_BITMAP *game_icon;
 	ALLEGRO_BITMAP *background;
 	ALLEGRO_BITMAP *startpage;
+	ALLEGRO_BITMAP *endword;
 private:
 	ALLEGRO_DISPLAY *display;
 	ALLEGRO_TIMER *timer;
