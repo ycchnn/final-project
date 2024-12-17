@@ -13,7 +13,7 @@ public:
 	// pure function for drawing the object
 	virtual void draw() = 0;
 public:
-	std::unique_ptr<Shape> shape;
+	std::shared_ptr<Shape> shape;
 };
 
 #endif
