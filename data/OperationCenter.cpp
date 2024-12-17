@@ -168,6 +168,7 @@ void OperationCenter::_cherrybomb()
 	for(size_t j = 0; j < towers.size(); ++j){
 		if(towers[j]->type == TowerType::STORM){
 			bool bombed = false;
+			towers[j]->placed_time++;
 			for (size_t i = 0; i < monsters.size(); ++i)
 			{
 				
@@ -181,7 +182,7 @@ void OperationCenter::_cherrybomb()
 				}
 				
 			}
-			if(bombed){
+			if(bombed||towers[j]->placed_time>= 2*DC->FPS){
 					towers.erase(towers.begin()+j);
 					--j;
 					break;

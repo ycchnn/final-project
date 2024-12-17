@@ -83,7 +83,11 @@ Tower::update() {
 	TowerArcane* sunTower = dynamic_cast<TowerArcane*>(this);
 	if(counter) counter--;
 	else {
-		if(type == TowerType::ARCHER) attack();
+		if(type == TowerType::ARCHER) {
+			DataCenter *DC = DataCenter::get_instance();
+			for(Monster *monster : DC->monsters)
+				attack(monster);
+		}
 		else if(sunTower)
 		{
 			//std::cout << "Creating sun from TowerArcane" << std::endl; // 打印是否進入該條件
@@ -97,9 +101,9 @@ Tower::update() {
  * @brief Check whether the tower can attack the target. If so, shoot a bullet to the target.
 */
 bool
-Tower::attack(/*Object *target*/) {
+Tower::attack(Object *target) {
 	if(counter) return false;
-	//if(!target->shape->overlap(*shape)) return false;
+	if(!target->shape->overlap(get_attack_range())) return false;
 	DataCenter *DC = DataCenter::get_instance();
 	SoundCenter *SC = SoundCenter::get_instance();
 	DC->towerBullets.emplace_back(create_bullet());
@@ -191,15 +195,15 @@ switch(type) {
 			return {
 			shape->center_x(),
 			shape->center_y(),
-			shape->center_x()+1000,
-			shape->center_y()+30
+			shape->center_x(),
+			shape->center_y()
 		};
 		} case TowerType::ARCHER: {
 			return {
-				shape->center_x(),
-				shape->center_y(),
-				shape->center_x(),
-				shape->center_y()
+				shape->center_x()-30,
+				shape->center_y()-30,
+				shape->center_x()+1000,
+				shape->center_y()+30
 			};
 		} case TowerType::CANON: {
 			return {
