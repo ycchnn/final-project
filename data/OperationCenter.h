@@ -36,10 +36,12 @@ private:
 	//revise s
 	void _update_monster_hero();
 	//revise e
+	void _update_sun();
 private:
 	void _draw_monster();
 	void _draw_tower();
 	void _draw_towerBullet();
+	void _draw_sun();    
 };
 
 #endif
