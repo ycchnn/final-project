@@ -27,6 +27,7 @@ private:
 	 */
 	enum class STATE {
 		MENU,
+		ABOUT,
 		START, // -> LEVEL
 		LEVEL, // -> PAUSE, END
 		PAUSE, // -> LEVEL
@@ -38,6 +39,7 @@ private:
 	ALLEGRO_BITMAP *background;
 	ALLEGRO_BITMAP *startpage;
 	ALLEGRO_BITMAP *endword;
+	ALLEGRO_BITMAP *about;
 private:
 	ALLEGRO_DISPLAY *display;
 	ALLEGRO_TIMER *timer;

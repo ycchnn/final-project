@@ -25,7 +25,7 @@ constexpr char background_img_path[] = "./assets/image/StartBackground.jpg";
 constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
 constexpr char menu_img_path[] = "./assets/image/menu.png";
 constexpr char end_img_path[] = "./assets/image/zombiewon.png";
-
+constexpr char about_img_path[] = "./assets/image/about.png";
 /**
  * @brief Game entry.
  * @details The function processes all allegro events and update the event state to a generic data storage (i.e. DataCenter).
@@ -139,6 +139,7 @@ Game::game_init() {
 	// game start
 	background = IC->get(background_img_path);
 	endword = IC->get(end_img_path);
+	about = IC->get(about_img_path);
 	/*
 	debug_log("Game state: change to START\n");
 	state = STATE::START;
@@ -162,7 +163,6 @@ Game::game_update() {
 
 	switch(state) {
 		case STATE::MENU: {
-
 			float btn_x1 = DC->window_width / 2.0 - 100;
 			float btn_x2 = DC->window_width / 2.0 + 100;
 			float btn_y1 = DC->window_height / 2.0 - 50;
@@ -178,8 +178,19 @@ Game::game_update() {
 				DC->mouse.y >= 300 && DC->mouse.y <= 500){
 					debug_log("<Game> state: change to END\n");
 					state = STATE::END;
-				}
-
+			}
+			else if(DC->mouse_state[1] && !DC->prev_mouse_state[1] &&
+			DC->mouse.x >= 100 && DC->mouse.x <= 220 &&
+			DC->mouse.y >= 40 && DC->mouse.y <= 85){
+				debug_log("<Game> state: change to about\n");
+				state = STATE::ABOUT;
+			}
+			break;
+		}
+		case STATE::ABOUT:{
+			if(DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+				state = STATE::MENU;
+			}
 			break;
 		}
 		case STATE::START: {
@@ -230,7 +241,7 @@ Game::game_update() {
 			}
 			if(end){
 				end_screen_timer++;
-				if (end_screen_timer >= DC->FPS * 8) {  // 鏄剧ず3绉掗挓
+				if (end_screen_timer >= DC->FPS * 8) {  
 					debug_log("<Game> state: change to MENU\n");
 					state = STATE::MENU;
 				}
@@ -285,7 +296,11 @@ Game::game_draw() {
 		if(state == STATE:: MENU){
 			al_draw_bitmap(startpage, 0, 0, 0);
 		}
-		else{
+		else if(state == STATE:: ABOUT){
+			//al_draw_filled_rectangle(0, 0, DC->window_width, DC->window_height, al_map_rgba(255, 255, 255, 64));
+			al_draw_bitmap(about, 0, 0, 0);
+		}
+		else {
 			al_draw_bitmap(background, 0, 0, 0);
 		}
 		
@@ -302,7 +317,7 @@ Game::game_draw() {
 				al_map_rgb(100, 100, 100));
 		*/
 		// user interface
-		if(state != STATE::START && state != STATE::MENU && state!= STATE::START) {
+		if(state != STATE::START && state != STATE::MENU && state!= STATE::START && state != STATE::ABOUT) {
 			//DC->level->draw();
 			//revise start
 			for(int i = 0; i<5; i++){
@@ -315,6 +330,14 @@ Game::game_draw() {
 
 	}
 	switch(state) {
+		case STATE::MENU: {
+			al_draw_filled_rectangle(100, 40, 220, 85, al_map_rgba(255, 255, 255, 64));
+			al_draw_text(
+				FC->caviar_dreams[FontSize::SMALL], al_map_rgb(0, 0, 0),
+				170, 60,
+				ALLEGRO_ALIGN_CENTRE, "ABOUT");
+			break;
+		}
 		case STATE::START: {
 		} case STATE::LEVEL: {
 			if(end){

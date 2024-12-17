@@ -4,8 +4,8 @@
 namespace PlayerSetting {
 	constexpr int init_HP = 1;
 	constexpr int init_coin = 100;
-	constexpr int coin_freq = 60;
-	constexpr int coin_increase = 5;
+	constexpr int coin_freq = 180;
+	constexpr int coin_increase = 50;
 };
 
 Player::Player() : HP(PlayerSetting::init_HP), coin(PlayerSetting::init_coin) {

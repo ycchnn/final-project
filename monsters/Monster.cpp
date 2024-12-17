@@ -154,7 +154,7 @@ Monster::update() {
 	}
 	else if(type == MonsterType::WOLFKNIGHT){
 		if(HP<90 && HP>0){
-			v = 30;
+			v = 35;
 			if(dir == Dir::ORI){
 				char buffer[50];
 				dir = Dir:: ANGRY;

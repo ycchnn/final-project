@@ -80,7 +80,7 @@ UI::update() {
                     if (DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
                         // 當鼠標點擊時，拾取sun
                         debug_log("<UI> Sun picked up!\n");
-                        DC->player->coin += 10;  
+                        DC->player->coin += 50;  
                         // 移除sun
                         auto it = std::find(DC->suns.begin(), DC->suns.end(), sun);
                         if (it != DC->suns.end()) {
