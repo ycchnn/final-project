@@ -283,19 +283,29 @@ void Monster::resume() {
 }
 
 void Monster::die() {
-		if(!dead){
-			dir = Dir::FALL;
-		char buffer[50];
-		sprintf(buffer, "%s/%s.gif",
-			MonsterSetting::gif_root_path[static_cast<int>(type)],
-			MonsterSetting::gif_postfix[static_cast<int>(dir)]);
-			gifPath[static_cast<int>(type)] = std::string(buffer);
-		}
-        // 设置死亡倒计时时间（单位秒）
-		
-        //if (death_timer <= 0) {
-          //  death_timer = 1.0f;
-        //}
-		dead = true;
-    }
+	if(!dead){
+		dir = Dir::FALL;
+	char buffer[50];
+	sprintf(buffer, "%s/%s.gif",
+		MonsterSetting::gif_root_path[static_cast<int>(type)],
+		MonsterSetting::gif_postfix[static_cast<int>(dir)]);
+		gifPath[static_cast<int>(type)] = std::string(buffer);
+	}
+	// 设置死亡倒计时时间（单位秒）
+	
+	//if (death_timer <= 0) {
+		//  death_timer = 1.0f;
+	//}
+	dead = true;
+}
+
+Rectangle
+Monster::get_region() const {
+	return {
+		shape->center_x(),
+		shape->center_y() + 30,
+		shape->center_x() + 90/2,
+		shape->center_y() + 144/2
+	};
+}
 

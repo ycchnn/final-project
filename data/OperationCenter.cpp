@@ -8,6 +8,7 @@
 #include "../Hero.h"
 #include "../sun.h"
 //revise end
+#include <iostream>
 
 void OperationCenter::update() {
 	// Update monsters.
@@ -59,7 +60,7 @@ void OperationCenter::_update_monster_towerBullet() {
 	for(size_t i = 0; i < monsters.size(); ++i) {
 		for(size_t j = 0; j < towerBullets.size(); ++j) {
 			// Check if the bullet overlaps with the monster.
-			if(monsters[i]->shape->overlap(*(towerBullets[j]->shape))) {
+			if(monsters[i]->get_region().overlap(*(towerBullets[j]->shape))) {
 				monsters[i]->is_hit = true;
 				monsters[i]->hit_timer = 0.3;
 				monsters[i]->brightness = 1.5;
@@ -82,14 +83,25 @@ void OperationCenter::_update_monster_tower() {
 	for(size_t i = 0; i < monsters.size(); ++i) {
 		for(size_t j = 0; j < towers.size(); ++j) {
 			// Check if the plant overlaps with the monster.
-			if(monsters[i]->shape->overlap(towers[j]->get_region())) {
-				monsters[i]->eating();
-				towers[j]->hp -= 1;
-				if(towers[j]->hp <= 0) {
-					towers.erase(towers.begin()+j);
-					--j;
-					monsters[i]->resume();
-					// Since the current plant is killed, we can directly proceed to next monster.
+			if(monsters[i]->get_region().overlap(towers[j]->get_region())) {
+				if(towers[j]->type == TowerType::POISON)
+				{
+					std::cout << "bomb\n" ;
+					monsters[i]->HP = 0;
+                    towers.erase(towers.begin() + j);
+                    --j;
+                    monsters[i]->resume();
+                    break;
+				}
+				else{
+					monsters[i]->eating();
+					towers[j]->hp -= 1;
+					if(towers[j]->hp <= 0) {
+						towers.erase(towers.begin()+j);
+						--j;
+						monsters[i]->resume();
+						// Since the current plant is killed, we can directly proceed to next monster.
+					}
 				}
 			}
 		}
@@ -178,4 +190,3 @@ void OperationCenter::_draw_sun() {
 	for(Sun *sun : suns)
 		sun->draw();
 }
-

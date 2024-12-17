@@ -166,7 +166,16 @@ Tower::get_region() const {
 	int w = animation->width;
 	int h = animation->height;
 	//revise end
-	return {
+	if(type == TowerType::POISON)
+	{
+		return {
+			shape->center_x() - 80/2,
+			shape->center_y() - (150-55/2),
+			shape->center_x() + 80/2,
+			shape->center_y() + 55/2
+		};
+	}
+	else return {
 		shape->center_x() - w/2,
 		shape->center_y() - h/2,
 		shape->center_x() - w/2 + w,

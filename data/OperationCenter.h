@@ -1,6 +1,6 @@
 #ifndef OPERATIONCENTER_H_INCLUDED
 #define OPERATIONCENTER_H_INCLUDED
-
+#include <allegro5/allegro.h>
 /**
  * @brief Class that defines functions for all object operations.
  * @details Object self-update, draw, and object-to-object interact functions are defined here.
@@ -20,7 +20,7 @@ public:
 	/**
 	 * @brief Highest level draw function.
 	 * @details Calls all other draw functions.
-	 */
+	 */ 
 	void draw();
 private:
 	OperationCenter() {}
@@ -41,7 +41,7 @@ private:
 	void _draw_monster();
 	void _draw_tower();
 	void _draw_towerBullet();
-	void _draw_sun();    
+	void _draw_sun();  
 };
 
 #endif

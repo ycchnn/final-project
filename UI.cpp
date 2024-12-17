@@ -175,6 +175,7 @@ UI::update() {
 
 void
 UI::draw() {
+	ALLEGRO_BITMAP *image = al_load_bitmap("assets/image/2f2a3067b6b04ffd80f9ba182f572bc8.png");
 	DataCenter *DC = DataCenter::get_instance();
 	FontCenter *FC = FontCenter::get_instance();
 	const Point &mouse = DC->mouse;
@@ -182,15 +183,16 @@ UI::draw() {
 	const int &game_field_length = DC->game_field_length;
 	const int &player_HP = DC->player->HP;
 	int love_width = al_get_bitmap_width(love);
-	for(int i = 1; i <= player_HP; ++i) {
+	/*for(int i = 1; i <= player_HP; ++i) {
 		al_draw_bitmap(love, game_field_length - (love_width + love_img_padding) * i, love_img_padding, 0);
-	}
+	}*/
 	// draw coin
 	const int &player_coin = DC->player->coin;
+	al_draw_bitmap(image, game_field_length+love_img_padding , love_img_padding,0);
 	al_draw_textf(
 		FC->courier_new[FontSize::MEDIUM], al_map_rgb(0, 0, 0),
-		game_field_length+love_img_padding, love_img_padding,
-		ALLEGRO_ALIGN_LEFT, "coin: %5d", player_coin);
+		game_field_length+love_img_padding+20, love_img_padding +7,
+		ALLEGRO_ALIGN_LEFT, " %5d", player_coin);
 	// draw tower shop items
 	for(auto &[bitmap, p, price] : tower_items) {
 		int w = al_get_bitmap_width(bitmap);
