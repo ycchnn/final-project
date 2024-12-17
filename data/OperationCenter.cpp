@@ -8,6 +8,7 @@
 #include "../Hero.h"
 #include "../sun.h"
 //revise end
+#include <iostream>
 
 void OperationCenter::update() {
 	// Update monsters.
@@ -83,6 +84,15 @@ void OperationCenter::_update_monster_tower() {
 		for(size_t j = 0; j < towers.size(); ++j) {
 			// Check if the plant overlaps with the monster.
 			if(monsters[i]->shape->overlap(towers[j]->get_region())) {
+				if(towers[i]->type == TowerType::POISON)
+				{
+					std::cout << "bomb\n" ;
+					monsters[i]->HP = 0;
+                    towers.erase(towers.begin() + j);
+                    --j;
+                    monsters[i]->resume();
+                    break;
+				}
 				monsters[i]->eating();
 				towers[j]->hp -= 1;
 				if(towers[j]->hp <= 0) {
@@ -178,4 +188,3 @@ void OperationCenter::_draw_sun() {
 	for(Sun *sun : suns)
 		sun->draw();
 }
-
